@@ -3,26 +3,27 @@
 import React, { useState, useEffect } from 'react';
 
 interface CarouselProps {
-  items: Array<{
+  items: {
     id: string;
     title: string;
     preview: string;
     date: string;
     onClick: () => void;
-  }>;
+  }[];
   autoPlay?: boolean;
   interval?: number;
 }
 
-const Carousel: React.FC<CarouselProps> = (props) => {
-  const { items, autoPlay = true, interval = 5000 } = props;
+const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 5000 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (!autoPlay || items.length === 0) return;
+
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % items.length);
     }, interval);
+
     return () => clearInterval(timer);
   }, [autoPlay, interval, items.length]);
 
@@ -48,15 +49,13 @@ const Carousel: React.FC<CarouselProps> = (props) => {
     );
   }
 
-  const translateValue = -currentIndex * 100;
-
   return (
     <div className="relative group">
       <div className="relative h-64 overflow-hidden rounded-3xl shadow-pastel-hover bg-gradient-to-br from-pink-400 via-purple-400 to-indigo-400 p-1">
         <div className="h-full glass-effect rounded-2xl overflow-hidden">
           <div
             className="h-full flex transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(${translateValue}%)` }}
+            style={{ transform: `translateX(-${currentIndex * 100}`%)` }}
           >
             {items.map((item) => (
               <div
@@ -113,19 +112,17 @@ const Carousel: React.FC<CarouselProps> = (props) => {
 
       {items.length > 1 && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-          {items.map((_, index) => {
-            const isActive = index === currentIndex;
-            const buttonClass = isActive
-              ? 'bg-gradient-to-r from-pink-500 to-purple-500 w-8 h-2.5 shadow-lg'
-              : 'bg-white/70 hover:bg-white w-2.5 h-2.5';
-            return (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`rounded-full transition-all duration-300 ${buttonClass}`}
-              />
-            );
-          })}
+          {items.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`rounded-full transition-all duration-300 ${
+                index === currentIndex
+                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 w-8 h-2.5 shadow-lg'
+                  : 'bg-white/70 hover:bg-white w-2.5 h-2.5'
+              }`}
+            />
+          ))}
         </div>
       )}
     </div>
