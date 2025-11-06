@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useAuth } from '@/app/providers';
+import React, { useState } from 'react';
+import { useAuth, useApp } from '@/app/providers';
 import FolderList from './FolderList';
 import NoteList from './NoteList';
 import NoteEditor from './NoteEditor';
@@ -11,6 +11,7 @@ type View = 'folders' | 'notes' | 'note' | 'search';
 
 export default function MemoApp() {
   const { currentUser, logout } = useAuth();
+  const { notes, loadFolders, loadNotes } = useApp();
   const [currentView, setCurrentView] = useState<View>('folders');
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
@@ -38,12 +39,37 @@ export default function MemoApp() {
   const handleBackToFolders = () => {
     setCurrentView('folders');
     setSelectedFolderId(null);
+    setSelectedNoteId(null);
   };
 
   const handleBackToNotes = () => {
     setCurrentView('notes');
     setSelectedNoteId(null);
   };
+
+  const handleSearchNoteSelect = (noteId: string) => {
+    // 검색에서 메모 선택 시 메모 편집으로 이동
+    const note = notes.find(n => n.id === noteId);
+    if (note) {
+      setSelectedFolderId(note.folderId);
+      setSelectedNoteId(noteId);
+      setCurrentView('note');
+    }
+  };
+
+  // 컴포넌트 마운트 시 데이터 로드
+  React.useEffect(() => {
+    const loadData = async () => {
+      try {
+        await loadFolders();
+        await loadNotes();
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+      }
+    };
+    loadData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen pb-20">
@@ -86,7 +112,7 @@ export default function MemoApp() {
         {currentView === 'note' && selectedNoteId && (
           <NoteEditor noteId={selectedNoteId} onBack={handleBackToNotes} />
         )}
-        {currentView === 'search' && <SearchPage onNoteSelect={handleNoteSelect} />}
+        {currentView === 'search' && <SearchPage onNoteSelect={handleSearchNoteSelect} />}
       </div>
 
       {/* 하단 네비게이션 */}

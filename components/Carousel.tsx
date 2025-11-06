@@ -42,19 +42,19 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
   if (items.length === 0) {
     return (
       <div className="bg-gradient-to-r from-pastel-pink to-pastel-purple rounded-3xl p-12 text-center border-2 border-dashed border-pink-300 shadow-pastel">
-        <div className="text-6xl mb-4 animate-float">?��</div>
-        <p className="text-gray-600 text-lg font-semibold">최근 메모가 ?�습?�다</p>
-        <p className="text-gray-500 text-sm mt-2">?�로??메모�??�성?�보?�요!</p>
+        <div className="text-6xl mb-4 animate-float">📝</div>
+        <p className="text-gray-600 text-lg font-semibold">최근 메모가 없습니다</p>
+        <p className="text-gray-500 text-sm mt-2">새로운 메모를 작성해보세요!</p>
       </div>
     );
   }
 
   return (
     <div className="relative group">
-      {/* 캐러?� 컨테?�너 */}
+      {/* 캐러셀 컨테이너 */}
       <div className="relative h-64 overflow-hidden rounded-3xl shadow-pastel-hover bg-gradient-to-br from-pink-400 via-purple-400 to-indigo-400 p-1">
         <div className="h-full glass-effect rounded-2xl overflow-hidden">
-          {/* ?�라?�드 */}
+          {/* 슬라이드 */}
           <div
             className="h-full flex transition-transform duration-500 ease-out"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -80,7 +80,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
                 </div>
                 <div className="flex items-center gap-2 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent font-bold mt-4">
                   <span>메모 보기</span>
-                  <span>??/span>
+                  <span>→</span>
                 </div>
               </div>
             ))}
@@ -88,7 +88,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
         </div>
       </div>
 
-      {/* ?�전 버튼 */}
+      {/* 이전 버튼 */}
       {items.length > 1 && (
         <button
           onClick={goToPrevious}
@@ -100,7 +100,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
         </button>
       )}
 
-      {/* ?�음 버튼 */}
+      {/* 다음 버튼 */}
       {items.length > 1 && (
         <button
           onClick={goToNext}
@@ -112,7 +112,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
         </button>
       )}
 
-      {/* ?�디케?�터 */}
+      {/* 인디케이터 */}
       {items.length > 1 && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
           {items.map((_, index) => (
@@ -133,5 +133,3 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
 };
 
 export default Carousel;
-
-

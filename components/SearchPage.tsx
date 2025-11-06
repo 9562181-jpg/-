@@ -1,27 +1,29 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAppContext } from '../context/AppContext';
-import { extractTitle, formatDate } from '../utils/storage';
+import { useApp } from '@/app/providers';
 
-const SearchPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { searchNotes } = useAppContext();
+interface SearchPageProps {
+  onNoteSelect: (noteId: string) => void;
+}
+
+const SearchPage: React.FC<SearchPageProps> = ({ onNoteSelect }) => {
+  const { notes } = useApp();
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<ReturnType<typeof searchNotes>>([]);
 
   const handleSearch = (value: string) => {
     setQuery(value);
-    if (value.trim()) {
-      setResults(searchNotes(value));
-    } else {
-      setResults([]);
-    }
   };
 
-  const handleNoteClick = (noteId: string) => {
-    navigate(`/note/${noteId}`);
+  const searchResults = notes.filter((note) => {
+    if (!query.trim()) return false;
+    return note.content.toLowerCase().includes(query.toLowerCase());
+  });
+
+  const extractTitle = (content: string) => {
+    const plainText = content.replace(/<[^>]*>/g, '');
+    const firstLine = plainText.split('\n')[0];
+    return firstLine.trim() || '제목 없음';
   };
 
   const getPreviewText = (content: string): string => {
@@ -31,33 +33,46 @@ const SearchPage: React.FC = () => {
     return preview.substring(0, 100);
   };
 
+  const formatDate = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const seconds = Math.floor(diff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (seconds < 60) return '방금 전';
+    if (minutes < 60) return `${minutes}분 전`;
+    if (hours < 24) return `${hours}시간 전`;
+    if (days < 7) return `${days}일 전`;
+    
+    return d.toLocaleDateString('ko-KR');
+  };
+
+  const handleNoteClick = (noteId: string) => {
+    onNoteSelect(noteId);
+  };
+
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
-      {/* ?�더 */}
+      {/* 헤더 */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 px-4 py-2 glass-effect hover:shadow-pastel rounded-xl transition-all transform hover:scale-105"
-          >
-            <span>??/span>
-            ?�로
-          </button>
+        <div className="flex items-center justify-center mb-4">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
-            <span>?��</span>
-            메모 검??
+            <span>🔍</span>
+            메모 검색
           </h2>
-          <div className="w-20"></div>
         </div>
 
-        {/* 검??�?*/}
+        {/* 검색 바 */}
         <div className="relative">
           <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-pink-400 text-xl">
-            ?��
+            🔍
           </div>
           <input
             type="text"
-            placeholder="메모 ?�용??검?�하?�요..."
+            placeholder="메모 내용을 검색하세요..."
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
             autoFocus
@@ -68,57 +83,54 @@ const SearchPage: React.FC = () => {
               onClick={() => handleSearch('')}
               className="absolute right-4 top-1/2 transform -translate-y-1/2 text-pink-400 hover:text-pink-600 text-xl transition-colors"
             >
-              ??
+              ✕
             </button>
           )}
         </div>
       </div>
 
-      {/* 검??결과 */}
+      {/* 검색 결과 */}
       <div>
         {query.trim() === '' ? (
           <div className="text-center py-20">
-            <div className="text-8xl mb-4">?��</div>
-            <p className="text-xl text-gray-500">검?�어�??�력?�주?�요</p>
+            <div className="text-8xl mb-4">🔍</div>
+            <p className="text-xl text-gray-500">검색어를 입력해주세요</p>
           </div>
-        ) : results.length === 0 ? (
+        ) : searchResults.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-8xl mb-4">?��</div>
-            <p className="text-xl text-gray-500 mb-2">검??결과가 ?�습?�다</p>
-            <p className="text-gray-400">?�른 ?�워?�로 검?�해보세??/p>
+            <div className="text-8xl mb-4">📭</div>
+            <p className="text-xl text-gray-500">검색 결과가 없습니다</p>
+            <p className="text-gray-400 mt-2">다른 검색어로 시도해보세요</p>
           </div>
         ) : (
-          <>
-            <div className="mb-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-2xl font-medium shadow-pastel">
-                <span>??/span>
-                {results.length}개의 메모�?찾았?�니??
-              </div>
+          <div>
+            <div className="mb-4 text-sm text-gray-600 bg-gradient-to-r from-pink-100 to-purple-100 px-4 py-2 rounded-full inline-block font-semibold">
+              {searchResults.length}개의 메모를 찾았습니다
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {results.map((note) => (
+            <div className="space-y-4">
+              {searchResults.map((note) => (
                 <div
                   key={note.id}
                   onClick={() => handleNoteClick(note.id)}
-                  className="group glass-effect rounded-2xl shadow-pastel hover:shadow-pastel-hover transition-all duration-300 cursor-pointer transform hover:-translate-y-2 border border-pink-100 overflow-hidden"
+                  className="glass-effect rounded-2xl shadow-pastel hover:shadow-pastel-hover transition-all duration-300 cursor-pointer transform hover:-translate-y-1 border border-pink-100 overflow-hidden group"
                 >
-                  <div className="p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-lg font-semibold text-gray-800 truncate flex-1 group-hover:text-pink-600 transition-colors">
-                        {extractTitle(note.content)}
-                      </h3>
-                      <span className="ml-2 px-3 py-1 bg-gradient-to-r from-pink-100 to-purple-100 text-pink-700 text-xs rounded-full whitespace-nowrap font-medium">
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-pink-600 transition-colors line-clamp-1">
+                      {extractTitle(note.content)}
+                    </h3>
+                    <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                      {getPreviewText(note.content) || '내용 없음'}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span className="bg-gradient-to-r from-pink-100 to-purple-100 text-pink-700 px-3 py-1 rounded-full font-semibold">
                         {formatDate(note.modifiedAt)}
                       </span>
                     </div>
-                    <p className="text-gray-600 text-sm line-clamp-3 min-h-[60px]">
-                      {getPreviewText(note.content) || '?�용 ?�음'}
-                    </p>
                   </div>
                 </div>
               ))}
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
@@ -126,4 +138,3 @@ const SearchPage: React.FC = () => {
 };
 
 export default SearchPage;
-

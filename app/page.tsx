@@ -1,6 +1,6 @@
 'use client';
 
-import { use Auth } from './providers';
+import { useAuth } from './providers';
 import AuthPage from '@/components/AuthPage';
 import MemoApp from '@/components/MemoApp';
 
