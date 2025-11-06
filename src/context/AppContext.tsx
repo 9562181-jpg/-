@@ -49,6 +49,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   useEffect(() => {
     const loadData = async () => {
       if (!currentUser) {
+        // 로그아웃 시 모든 데이터 초기화
         setNotes([]);
         setFolders([]);
         setLoading(false);
@@ -56,15 +57,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
 
       setLoading(true);
+      // 사용자 전환 시 이전 데이터 즉시 초기화
+      setNotes([]);
+      setFolders([]);
+      
       try {
+        console.log(`📚 사용자 ${currentUser.email}의 데이터 로드 중...`);
         const [loadedNotes, loadedFolders] = await Promise.all([
           loadNotes(currentUser.uid),
           loadFolders(currentUser.uid),
         ]);
+        console.log(`✅ 메모 ${loadedNotes.length}개, 폴더 ${loadedFolders.length}개 로드됨`);
         setNotes(loadedNotes);
         setFolders(loadedFolders);
       } catch (error) {
-        console.error('데이터 로드 실패:', error);
+        console.error('❌ 데이터 로드 실패:', error);
       } finally {
         setLoading(false);
       }
@@ -85,6 +92,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       modifiedAt: Date.now(),
     };
     
+    console.log(`📝 새 메모 생성 (사용자: ${currentUser.email}, 폴더: ${folderId})`);
     setNotes((prev) => [newNote, ...prev]);
     saveNote(currentUser.uid, newNote).catch(console.error);
     return newNote;
