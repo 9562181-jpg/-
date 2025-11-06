@@ -1,0 +1,63 @@
+// Prisma Schema for Memo App with SQLite
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// 사용자 모델
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String   // bcrypt로 해시된 비밀번호
+  displayName  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // 관계
+  notes        Note[]
+  folders      Folder[]
+
+  @@map("users")
+}
+
+// 폴더 모델
+model Folder {
+  id         String   @id @default(uuid())
+  name       String
+  parentId   String?
+  isSpecial  Boolean  @default(false)
+  userId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // 관계
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notes      Note[]
+
+  @@map("folders")
+  @@index([userId])
+}
+
+// 메모 모델
+model Note {
+  id         String   @id @default(uuid())
+  content    String   @default("")
+  folderId   String
+  userId     String
+  createdAt  DateTime @default(now())
+  modifiedAt DateTime @updatedAt
+
+  // 관계
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folder     Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
+  @@index([userId])
+  @@index([folderId])
+}
+

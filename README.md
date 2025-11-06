@@ -1,18 +1,21 @@
 # 메모 앱 ✨
 
-React, TypeScript, Tailwind CSS로 만든 현대적이고 아름다운 메모 애플리케이션입니다.
+React, TypeScript, Tailwind CSS, SQLite, Prisma ORM으로 만든 현대적이고 아름다운 메모 애플리케이션입니다.
 
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.2-38B2AC?logo=tailwind-css)
 ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-4.9.5-3178C6?logo=typescript)
+![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite)
+![Prisma](https://img.shields.io/badge/Prisma-5.7.0-2D3748?logo=prisma)
 
 ## 🎨 주요 기능
 
 ### 🔐 인증 시스템
-- **Firebase Authentication** 통합
+- **SQLite + Prisma ORM** 데이터베이스
+- **JWT** 토큰 기반 인증
+- **bcrypt** 비밀번호 암호화 (Salt rounds: 10)
 - 이메일/비밀번호 기반 회원가입 및 로그인
-- 사용자별 데이터 분리
-- 로컬 모드 지원 (Firebase 설정 없이도 사용 가능)
+- 사용자별 완전한 데이터 격리
 
 ### 📁 폴더 관리
 - 폴더 생성 및 삭제
@@ -44,10 +47,11 @@ React, TypeScript, Tailwind CSS로 만든 현대적이고 아름다운 메모 �
 - 복원 기능
 - 영구 삭제 옵션
 
-### 💾 데이터 저장 (이중 모드)
-- **Firebase 모드**: Firestore 클라우드 동기화
-- **로컬 모드**: 브라우저 로컬 스토리지 (Firebase 설정 없이 사용 가능)
-- 자동 Fallback 시스템
+### 💾 데이터 저장
+- **SQLite**: 파일 기반 경량 데이터베이스
+- **Prisma ORM**: 타입 안전한 데이터베이스 접근
+- **자동 저장**: 300ms 디바운싱으로 실시간 저장
+- **데이터베이스 파일**: `server/prisma/dev.db`
 
 ### 🎨 밝은 분위기 디자인
 - **파스텔 테마**: 핑크, 퍼플, 민트 등 밝은 색상
@@ -59,90 +63,126 @@ React, TypeScript, Tailwind CSS로 만든 현대적이고 아름다운 메모 �
 
 ## 🚀 설치 및 실행
 
-### 1. 패키지 설치
+### 방법 1: 자동 실행 (권장)
+
 ```bash
+# 1. 프론트엔드 패키지 설치
 npm install
+
+# 2. 백엔드 패키지 설치
+cd server
+npm install
+cd ..
+
+# 3. 전체 실행 (백엔드 + 프론트엔드)
+npm run start:all
 ```
 
-### 2. Firebase 설정 (선택 사항)
-
-**로컬 모드로 바로 사용 가능!** Firebase 설정 없이도 브라우저 로컬 스토리지를 사용하여 메모를 저장할 수 있습니다.
-
-클라우드 동기화를 원하시면:
-1. `FIREBASE_SETUP.md` 파일을 참고하여 Firebase 프로젝트를 생성하세요
-2. `src/firebase/config.ts` 파일에서 Firebase 구성 정보를 업데이트하세요
-
-### 3. 개발 서버 실행
+또는 Windows에서:
 ```bash
+start_all.bat
+```
+
+### 방법 2: 수동 실행
+
+**터미널 1 - 백엔드 서버:**
+```bash
+cd server
+npm install
+npm run dev
+```
+
+**터미널 2 - 프론트엔드:**
+```bash
+npm install
 npm start
 ```
 
-브라우저에서 [http://localhost:3000](http://localhost:3000)을 열어 앱을 확인할 수 있습니다.
+### 실행 확인
 
-- **로컬 모드**: Firebase 설정이 없으면 자동으로 로컬 스토리지 모드로 실행됩니다
-- **Firebase 모드**: Firebase 설정 시 클라우드 동기화가 활성화됩니다
+- **백엔드**: http://localhost:5000
+- **프론트엔드**: http://localhost:3000
 
-### 4. 빌드
+브라우저가 자동으로 열립니다!
+
+### 빌드
 ```bash
 npm run build
 ```
 
 ## 🛠 기술 스택
 
+### 프론트엔드
 - **React 18**: UI 프레임워크
 - **TypeScript**: 타입 안정성
 - **Tailwind CSS 3.3**: Utility-First CSS 프레임워크 + 파스텔 테마
 - **React Router**: 라우팅
-- **Firebase**: 인증 및 데이터베이스
-  - Firebase Authentication (이메일/비밀번호)
-  - Cloud Firestore (NoSQL 데이터베이스)
-- **Local Storage**: 로컬 모드 데이터 영속성
+
+### 백엔드
+- **Node.js + Express**: REST API 서버
+- **SQLite**: 파일 기반 경량 데이터베이스
+- **Prisma ORM**: 타입 안전한 데이터베이스 접근
+- **JWT**: 토큰 기반 인증
+- **bcrypt**: 비밀번호 암호화
 
 ## 📁 프로젝트 구조
 
 ```
-src/
-├── components/        # React 컴포넌트
-│   ├── AuthPage.tsx      # 로그인/회원가입 화면
-│   ├── Carousel.tsx      # 최근 메모 캐러셀
-│   ├── FolderList.tsx    # 폴더 목록 화면
-│   ├── NoteList.tsx      # 메모 목록 화면
-│   ├── NoteEditor.tsx    # 메모 편집 화면 (리치 에디터)
-│   └── SearchPage.tsx    # 검색 화면
-├── context/           # Context API
-│   ├── AppContext.tsx    # 전역 상태 관리
-│   └── AuthContext.tsx   # 인증 상태 관리
-├── firebase/          # Firebase 설정
-│   └── config.ts         # Firebase 초기화
-├── types/             # TypeScript 타입 정의
-│   └── index.ts
-├── utils/             # 유틸리티 함수
-│   └── storage.ts        # 로컬/Firebase 스토리지 관리
-├── styles/            # CSS 스타일
-│   └── index.css         # Tailwind + 커스텀 스타일
-├── App.tsx            # 메인 앱 컴포넌트
-└── index.tsx          # 진입점
-tailwind.config.js     # Tailwind 설정 (파스텔 테마)
-postcss.config.js      # PostCSS 설정
-FIREBASE_SETUP.md      # Firebase 설정 가이드
+memo/
+├── src/                    # 프론트엔드 (React)
+│   ├── api/
+│   │   └── client.ts           # API 클라이언트
+│   ├── components/
+│   │   ├── AuthPage.tsx        # 로그인/회원가입 화면
+│   │   ├── Carousel.tsx        # 최근 메모 캐러셀
+│   │   ├── FolderList.tsx      # 폴더 목록 화면
+│   │   ├── NoteList.tsx        # 메모 목록 화면
+│   │   ├── NoteEditor.tsx      # 메모 편집 화면
+│   │   └── SearchPage.tsx      # 검색 화면
+│   ├── context/
+│   │   ├── AppContext.tsx      # 전역 상태 관리
+│   │   └── AuthContext.tsx     # 인증 상태 관리
+│   ├── types/
+│   │   └── index.ts            # TypeScript 타입
+│   ├── utils/
+│   │   └── storage.ts          # 유틸리티 함수
+│   ├── styles/
+│   │   └── index.css           # Tailwind 스타일
+│   ├── App.tsx
+│   └── index.tsx
+├── server/                 # 백엔드 (Express + Prisma)
+│   ├── prisma/
+│   │   ├── schema.prisma       # 데이터베이스 스키마
+│   │   ├── dev.db             # SQLite 데이터베이스
+│   │   └── migrations/        # 마이그레이션 파일
+│   ├── src/
+│   │   ├── index.js           # Express 서버
+│   │   ├── middleware/
+│   │   │   └── auth.js        # JWT 인증 미들웨어
+│   │   └── routes/
+│   │       ├── auth.js        # 인증 API
+│   │       ├── notes.js       # 메모 API
+│   │       └── folders.js     # 폴더 API
+│   └── package.json
+├── tailwind.config.js
+├── package.json
+└── start_all.bat          # 전체 실행 스크립트
 ```
 
 ## 📱 사용 방법
 
-### 로컬 모드 (Firebase 설정 없음)
-1. 앱 실행 시 자동으로 로컬 사용자로 로그인됨
-2. 상단에 "로컬 모드" 배지 표시
-3. 모든 데이터는 브라우저 로컬 스토리지에 저장
+### 1. 회원가입 및 로그인
+1. 앱 실행 → 로그인 페이지 표시
+2. "회원가입" 탭에서 계정 생성:
+   - 이름, 이메일, 비밀번호 입력
+   - 비밀번호는 bcrypt로 암호화되어 저장
+3. 회원가입 후 자동 로그인
+4. 상단에 "SQLite + Prisma" 배지 표시
 
-### Firebase 모드
-1. **회원가입/로그인**: Firebase 설정 완료 후 계정 생성
-2. **사용자별 데이터**: 로그인한 사용자의 메모만 표시
-3. **클라우드 동기화**: 모든 메모가 Firestore에 저장
-
-### 일반 사용법
+### 2. 메모 작성
 1. **폴더 만들기**: 메인 화면에서 '새 폴더' 버튼 클릭
 2. **메모 작성**: 폴더 선택 후 '새 메모' 버튼 클릭
-3. **자동 저장**: 입력하는 즉시 자동으로 저장됨
+3. **자동 저장**: 입력하는 즉시 자동으로 저장됨 (300ms)
 4. **서식 적용**: 에디터 상단의 도구 모음 사용
 5. **체크리스트**: 
    - ☑ 버튼으로 체크리스트 추가
@@ -150,6 +190,11 @@ FIREBASE_SETUP.md      # Firebase 설정 가이드
    - 빈 항목에서 엔터로 종료
 6. **이미지 추가**: 📷 버튼으로 이미지 첨부
 7. **검색**: 하단 네비게이션의 검색 아이콘 클릭
+
+### 3. 사용자 전환
+1. 로그아웃 클릭
+2. 다른 계정으로 로그인 또는 새 계정 생성
+3. 각 사용자는 완전히 독립된 메모 공간을 가짐
 
 ## ✨ Tailwind CSS 특징
 
@@ -179,16 +224,21 @@ theme: {
 
 ## 🎯 특징
 
-- ✅ 완전한 CRUD 기능
-- ✅ 자동 저장 (300ms 디바운싱)
-- ✅ 완전 반응형 디자인 (Tailwind)
-- ✅ Utility-First CSS 접근
-- ✅ 이모지 기반 직관적 UI
-- ✅ 부드러운 애니메이션 & 트랜지션
-- ✅ 로컬 데이터 영속성
-- ✅ 실시간 제목 동기화
-- ✅ 안전한 삭제 및 복원
-- ✅ 다크 모드 준비 완료
+### 백엔드
+- ✅ **SQLite + Prisma ORM**: 타입 안전한 데이터베이스 접근
+- ✅ **JWT 인증**: 토큰 기반 보안 인증
+- ✅ **bcrypt 암호화**: 안전한 비밀번호 저장
+- ✅ **RESTful API**: 표준 HTTP 메서드
+- ✅ **사용자별 데이터 격리**: 완전한 데이터 분리
+
+### 프론트엔드
+- ✅ **완전한 CRUD 기능**: 생성, 조회, 수정, 삭제
+- ✅ **자동 저장**: 300ms 디바운싱
+- ✅ **완전 반응형**: Tailwind CSS
+- ✅ **밝은 파스텔 테마**: 글래스모피즘 + 그라데이션
+- ✅ **리치 텍스트 에디터**: 체크리스트, 이미지 지원
+- ✅ **부드러운 애니메이션**: 모던한 UX
+- ✅ **실시간 검색**: 즉시 결과 표시
 
 ## 📦 주요 패키지
 
@@ -235,10 +285,53 @@ theme: {
 - 결과 카운트 배지
 - 빈 상태 일러스트
 
+## 💽 데이터베이스 정보
+
+### SQLite 데이터베이스
+- **위치**: `server/prisma/dev.db`
+- **타입**: SQLite3 파일 기반 데이터베이스
+- **크기**: 자동 증가 (메모에 따라)
+
+### Prisma ORM
+- **버전**: 5.7.0
+- **클라이언트**: @prisma/client
+- **마이그레이션**: `server/prisma/migrations/`
+
+### 데이터 확인
+```bash
+# Prisma Studio 실행
+cd server
+npm run prisma:studio
+```
+
+http://localhost:5555 에서 GUI로 데이터 확인 가능
+
+## 📚 추가 문서
+
+- **`server/README.md`**: 백엔드 API 상세 문서
+- **`SQLITE_PRISMA_GUIDE.md`**: 데이터베이스 가이드
+- **`USER_GUIDE.md`**: 사용자 가이드
+
+## 🔒 보안
+
+### 비밀번호 보호
+- bcrypt로 해시화 (Salt rounds: 10)
+- 평문 비밀번호는 절대 저장 안됨
+
+### JWT 토큰
+- 7일 유효기간
+- localStorage에 안전하게 저장
+- 모든 API 요청에 자동 포함
+
+### 데이터 격리
+- 각 사용자는 자신의 데이터만 접근
+- SQL 레벨에서 userId로 필터링
+- Prisma의 타입 안전성 보장
+
 ## 📄 라이선스
 
 MIT
 
 ---
 
-Made with ❤️ using React + TypeScript + Tailwind CSS
+Made with ❤️ using React + TypeScript + Tailwind CSS + SQLite + Prisma

@@ -8,7 +8,7 @@ const AuthPage: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup, login, isLocalMode } = useAuth();
+  const { signup, login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -210,30 +210,19 @@ const AuthPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 모드 안내 */}
-        <div className="mt-6 p-4 glass-effect rounded-2xl text-center border-2 border-purple-100">
-          {isLocalMode ? (
-            <div>
-              <p className="text-sm font-semibold text-purple-600 mb-2">
-                💡 로컬 스토리지 모드
-              </p>
-              <p className="text-xs text-gray-600 mb-2">
-                계정 정보는 브라우저에 저장됩니다. 실제 사용자처럼 회원가입/로그인이 가능합니다!
-              </p>
-              <p className="text-xs text-amber-600">
-                📖 Firebase를 설정하면 클라우드 동기화를 사용할 수 있습니다 (FIREBASE_SETUP.md 참고)
-              </p>
-            </div>
-          ) : (
-            <div>
-              <p className="text-sm font-semibold text-green-600 mb-1">
-                ✅ Firebase 모드
-              </p>
-              <p className="text-xs text-gray-600">
-                클라우드 동기화가 활성화되었습니다
-              </p>
-            </div>
-          )}
+        {/* 데이터베이스 안내 */}
+        <div className="mt-6 p-4 glass-effect rounded-2xl text-center border-2 border-green-100">
+          <div>
+            <p className="text-sm font-semibold text-green-600 mb-2">
+              💽 SQLite + Prisma ORM
+            </p>
+            <p className="text-xs text-gray-600 mb-2">
+              안전한 로컬 데이터베이스로 모든 메모를 관리합니다
+            </p>
+            <p className="text-xs text-green-600">
+              ✅ bcrypt 비밀번호 암호화 | JWT 인증 | 사용자별 데이터 완전 분리
+            </p>
+          </div>
         </div>
       </div>
     </div>

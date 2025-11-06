@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { extractTitle, formatDate } from '../utils/storage';
-import { SortOption, SPECIAL_FOLDER_IDS } from '../types';
+import { SortOption } from '../types';
 
 const NoteList: React.FC = () => {
   const { folderId } = useParams<{ folderId: string }>();
@@ -25,7 +25,7 @@ const NoteList: React.FC = () => {
 
   const folder = folders.find((f) => f.id === folderId);
   const notes = getNotesInFolder(folderId);
-  const isRecentlyDeleted = folderId === SPECIAL_FOLDER_IDS.RECENTLY_DELETED;
+  const isRecentlyDeleted = folder?.name === '최근 삭제된 항목';
 
   const handleNewNote = () => {
     if (isRecentlyDeleted) return;
@@ -50,7 +50,10 @@ const NoteList: React.FC = () => {
 
   const handleRestoreNote = (e: React.MouseEvent, noteId: string) => {
     e.stopPropagation();
-    restoreNote(noteId, SPECIAL_FOLDER_IDS.ALL_NOTES);
+    const allNotesFolder = folders.find(f => f.name === '모든 메모');
+    if (allNotesFolder) {
+      restoreNote(noteId, allNotesFolder.id);
+    }
   };
 
   const getPreviewText = (content: string): string => {

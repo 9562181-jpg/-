@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { useAuth } from '../context/AuthContext';
-import { Folder, SPECIAL_FOLDER_IDS } from '../types';
+import { Folder } from '../types';
 import { extractTitle, formatDate } from '../utils/storage';
 import Carousel from './Carousel';
 
 const FolderList: React.FC = () => {
   const navigate = useNavigate();
   const { folders, notes, createFolder, deleteFolder } = useAppContext();
-  const { isLocalMode } = useAuth();
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
 
@@ -35,8 +33,9 @@ const FolderList: React.FC = () => {
   };
 
   // 최근 메모 5개 가져오기 (휴지통 제외)
+  const recentlyDeletedFolder = folders.find(f => f.name === '최근 삭제된 항목');
   const recentNotes = notes
-    .filter((note) => note.folderId !== SPECIAL_FOLDER_IDS.RECENTLY_DELETED)
+    .filter((note) => note.folderId !== recentlyDeletedFolder?.id)
     .sort((a, b) => b.modifiedAt - a.modifiedAt)
     .slice(0, 5)
     .map((note) => ({
@@ -64,26 +63,21 @@ const FolderList: React.FC = () => {
         </button>
       </div>
 
-      {/* 로컬 모드 안내 */}
-      {isLocalMode && (
-        <div className="mb-6 p-4 glass-effect rounded-2xl border-2 border-purple-200 shadow-pastel animate-fade-in">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">💾</span>
-            <div className="flex-1">
-              <h3 className="font-bold text-purple-800 mb-1">로컬 스토리지 모드</h3>
-              <p className="text-sm text-purple-700 mb-2">
-                현재 브라우저에 데이터를 저장하고 있습니다. 여러 계정을 만들어 사용할 수 있습니다!
-              </p>
-              <p className="text-xs text-purple-600">
-                💡 <strong>로그아웃</strong> 후 다른 계정으로 로그인하거나 새 계정을 만들 수 있습니다
-              </p>
-              <p className="text-xs text-amber-600 mt-1">
-                📖 클라우드 동기화: <code className="px-2 py-0.5 bg-amber-100 rounded">FIREBASE_SETUP.md</code> 참고
-              </p>
-            </div>
+      {/* 데이터베이스 안내 */}
+      <div className="mb-6 p-4 glass-effect rounded-2xl border-2 border-green-200 shadow-pastel animate-fade-in">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl">💽</span>
+          <div className="flex-1">
+            <h3 className="font-bold text-green-800 mb-1">SQLite + Prisma ORM</h3>
+            <p className="text-sm text-green-700 mb-2">
+              안전하고 빠른 로컬 데이터베이스로 메모를 관리합니다. 모든 데이터는 암호화되어 저장됩니다.
+            </p>
+            <p className="text-xs text-green-600">
+              💡 여러 계정을 만들어 사용할 수 있으며, 각 사용자의 데이터는 완전히 분리됩니다
+            </p>
           </div>
         </div>
-      )}
+      </div>
 
       {/* 최근 메모 캐러셀 */}
       <div className="mb-8">

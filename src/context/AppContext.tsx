@@ -2,13 +2,10 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Note, Folder, SortOption, SPECIAL_FOLDER_IDS } from '../types';
 import {
   loadNotes,
-  saveNote,
-  deleteNoteFromDB,
   loadFolders,
-  saveFolder,
-  deleteFolderFromDB,
   generateId,
 } from '../utils/storage';
+import { api } from '../api/client';
 import { useAuth } from './AuthContext';
 
 interface AppContextType {
@@ -64,8 +61,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       try {
         console.log(`📚 사용자 ${currentUser.email}의 데이터 로드 중...`);
         const [loadedNotes, loadedFolders] = await Promise.all([
-          loadNotes(currentUser.uid),
-          loadFolders(currentUser.uid),
+          loadNotes(),
+          loadFolders(),
         ]);
         console.log(`✅ 메모 ${loadedNotes.length}개, 폴더 ${loadedFolders.length}개 로드됨`);
         setNotes(loadedNotes);
@@ -84,8 +81,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const createNote = (folderId: string): Note => {
     if (!currentUser) throw new Error('로그인이 필요합니다');
     
+    const tempId = `temp-${Date.now()}`;
     const newNote: Note = {
-      id: generateId(),
+      id: tempId,
       folderId,
       content: '',
       createdAt: Date.now(),
@@ -94,7 +92,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     
     console.log(`📝 새 메모 생성 (사용자: ${currentUser.email}, 폴더: ${folderId})`);
     setNotes((prev) => [newNote, ...prev]);
-    saveNote(currentUser.uid, newNote).catch(console.error);
+    
+    // API로 메모 생성
+    api.notes.create(folderId, '').then(({ note }) => {
+      setNotes((prev) => prev.map(n => n.id === tempId ? {
+        ...note,
+        createdAt: new Date(note.createdAt).getTime(),
+        modifiedAt: new Date(note.modifiedAt).getTime(),
+      } : n));
+    }).catch(console.error);
+    
     return newNote;
   };
 
@@ -102,36 +109,39 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateNote = (id: string, content: string) => {
     if (!currentUser) return;
     
+    // 임시 ID는 업데이트하지 않음
+    if (id.startsWith('temp-')) {
+      setNotes((prev) =>
+        prev.map((note) =>
+          note.id === id ? { ...note, content, modifiedAt: Date.now() } : note
+        )
+      );
+      return;
+    }
+    
     setNotes((prev) =>
-      prev.map((note) => {
-        if (note.id === id) {
-          const updatedNote = { ...note, content, modifiedAt: Date.now() };
-          saveNote(currentUser.uid, updatedNote).catch(console.error);
-          return updatedNote;
-        }
-        return note;
-      })
+      prev.map((note) =>
+        note.id === id ? { ...note, content, modifiedAt: Date.now() } : note
+      )
     );
+    
+    api.notes.update(id, content).catch(console.error);
   };
 
   // 메모 삭제 (휴지통으로 이동)
   const deleteNote = (id: string) => {
     if (!currentUser) return;
     
+    const recentlyDeleted = folders.find(f => f.name === '최근 삭제된 항목');
+    if (!recentlyDeleted) return;
+    
     setNotes((prev) =>
-      prev.map((note) => {
-        if (note.id === id) {
-          const updatedNote = {
-            ...note,
-            folderId: SPECIAL_FOLDER_IDS.RECENTLY_DELETED,
-            modifiedAt: Date.now(),
-          };
-          saveNote(currentUser.uid, updatedNote).catch(console.error);
-          return updatedNote;
-        }
-        return note;
-      })
+      prev.map((note) =>
+        note.id === id ? { ...note, folderId: recentlyDeleted.id, modifiedAt: Date.now() } : note
+      )
     );
+    
+    api.notes.move(id, recentlyDeleted.id).catch(console.error);
   };
 
   // 메모 영구 삭제
@@ -139,7 +149,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!currentUser) return;
     
     setNotes((prev) => prev.filter((note) => note.id !== id));
-    deleteNoteFromDB(currentUser.uid, id).catch(console.error);
+    api.notes.delete(id).catch(console.error);
   };
 
   // 메모 복원
@@ -147,72 +157,59 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (!currentUser) return;
     
     setNotes((prev) =>
-      prev.map((note) => {
-        if (note.id === id) {
-          const updatedNote = {
-            ...note,
-            folderId: targetFolderId,
-            modifiedAt: Date.now(),
-          };
-          saveNote(currentUser.uid, updatedNote).catch(console.error);
-          return updatedNote;
-        }
-        return note;
-      })
+      prev.map((note) =>
+        note.id === id ? { ...note, folderId: targetFolderId, modifiedAt: Date.now() } : note
+      )
     );
+    
+    api.notes.move(id, targetFolderId).catch(console.error);
   };
 
   // 폴더 생성
   const createFolder = (name: string, parentId: string | null) => {
     if (!currentUser) return;
     
+    const tempId = `temp-${Date.now()}`;
     const newFolder: Folder = {
-      id: generateId(),
+      id: tempId,
       name,
       parentId,
     };
     
     setFolders((prev) => [...prev, newFolder]);
-    saveFolder(currentUser.uid, newFolder).catch(console.error);
+    
+    api.folders.create(name, parentId).then(({ folder }) => {
+      setFolders((prev) => prev.map(f => f.id === tempId ? folder : f));
+    }).catch(console.error);
   };
 
   // 폴더 삭제
   const deleteFolder = (id: string) => {
     if (!currentUser) return;
     
-    // 폴더 내 모든 메모를 휴지통으로 이동
-    setNotes((prev) =>
-      prev.map((note) => {
-        if (note.folderId === id) {
-          const updatedNote = {
-            ...note,
-            folderId: SPECIAL_FOLDER_IDS.RECENTLY_DELETED,
-          };
-          saveNote(currentUser.uid, updatedNote).catch(console.error);
-          return updatedNote;
-        }
-        return note;
-      })
-    );
-    
-    // 폴더 삭제
     setFolders((prev) => prev.filter((folder) => folder.id !== id));
-    deleteFolderFromDB(currentUser.uid, id).catch(console.error);
+    api.folders.delete(id).then(() => {
+      // 서버에서 메모들을 휴지통으로 이동했으므로 다시 로드
+      loadNotes().then(setNotes).catch(console.error);
+    }).catch(console.error);
   };
 
   // 특정 폴더의 메모 가져오기
   const getNotesInFolder = (folderId: string): Note[] => {
     let filteredNotes: Note[];
 
-    if (folderId === SPECIAL_FOLDER_IDS.ALL_NOTES) {
+    const folder = folders.find(f => f.id === folderId);
+    const recentlyDeletedFolder = folders.find(f => f.name === '최근 삭제된 항목');
+    
+    if (folder?.name === '모든 메모') {
       // 모든 메모 (휴지통 제외)
       filteredNotes = notes.filter(
-        (note) => note.folderId !== SPECIAL_FOLDER_IDS.RECENTLY_DELETED
+        (note) => note.folderId !== recentlyDeletedFolder?.id
       );
-    } else if (folderId === SPECIAL_FOLDER_IDS.RECENTLY_DELETED) {
+    } else if (folder?.name === '최근 삭제된 항목') {
       // 휴지통
       filteredNotes = notes.filter(
-        (note) => note.folderId === SPECIAL_FOLDER_IDS.RECENTLY_DELETED
+        (note) => note.folderId === folderId
       );
     } else {
       // 특정 폴더
@@ -240,13 +237,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const searchNotes = (query: string): Note[] => {
     if (!query.trim()) return [];
 
+    const recentlyDeletedFolder = folders.find(f => f.name === '최근 삭제된 항목');
     const lowercaseQuery = query.toLowerCase();
+    
     return notes
       .filter((note) => {
         const content = note.content.replace(/<[^>]*>/g, '').toLowerCase();
         return content.includes(lowercaseQuery);
       })
-      .filter((note) => note.folderId !== SPECIAL_FOLDER_IDS.RECENTLY_DELETED)
+      .filter((note) => note.folderId !== recentlyDeletedFolder?.id)
       .sort((a, b) => b.modifiedAt - a.modifiedAt);
   };
 

@@ -44,7 +44,7 @@ function BottomNav() {
 }
 
 function MainApp() {
-  const { currentUser, logout, isLocalMode } = useAuth();
+  const { currentUser, logout } = useAuth();
 
   const handleLogout = async () => {
     if (window.confirm('로그아웃 하시겠습니까?')) {
@@ -73,11 +73,9 @@ function MainApp() {
             <div>
               <p className="text-sm font-bold text-gray-800 flex items-center gap-2">
                 {currentUser?.displayName || '사용자'}
-                {isLocalMode && (
-                  <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-100 to-amber-100 text-amber-700 text-xs rounded-full font-medium">
-                    로컬 모드
-                  </span>
-                )}
+                <span className="px-2 py-0.5 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 text-xs rounded-full font-medium">
+                  SQLite + Prisma
+                </span>
               </p>
               <p className="text-xs text-gray-500">{currentUser?.email || ''}</p>
             </div>
