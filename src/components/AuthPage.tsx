@@ -8,7 +8,7 @@ const AuthPage: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup, login } = useAuth();
+  const { signup, login, isLocalMode } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,24 +28,30 @@ const AuthPage: React.FC = () => {
       }
     } catch (err: any) {
       console.error(err);
-      switch (err.code) {
-        case 'auth/email-already-in-use':
-          setError('이미 사용 중인 이메일입니다.');
-          break;
-        case 'auth/invalid-email':
-          setError('유효하지 않은 이메일 주소입니다.');
-          break;
-        case 'auth/weak-password':
-          setError('비밀번호는 최소 6자 이상이어야 합니다.');
-          break;
-        case 'auth/user-not-found':
-          setError('사용자를 찾을 수 없습니다.');
-          break;
-        case 'auth/wrong-password':
-          setError('비밀번호가 올바르지 않습니다.');
-          break;
-        default:
-          setError('오류가 발생했습니다. 다시 시도해주세요.');
+      // 로컬 모드 에러 처리
+      if (err.message) {
+        setError(err.message);
+      } else {
+        // Firebase 에러 처리
+        switch (err.code) {
+          case 'auth/email-already-in-use':
+            setError('이미 사용 중인 이메일입니다.');
+            break;
+          case 'auth/invalid-email':
+            setError('유효하지 않은 이메일 주소입니다.');
+            break;
+          case 'auth/weak-password':
+            setError('비밀번호는 최소 6자 이상이어야 합니다.');
+            break;
+          case 'auth/user-not-found':
+            setError('사용자를 찾을 수 없습니다.');
+            break;
+          case 'auth/wrong-password':
+            setError('비밀번호가 올바르지 않습니다.');
+            break;
+          default:
+            setError('오류가 발생했습니다. 다시 시도해주세요.');
+        }
       }
     } finally {
       setLoading(false);
@@ -204,11 +210,30 @@ const AuthPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 데모 안내 */}
-        <div className="mt-6 p-4 glass-effect rounded-2xl text-center">
-          <p className="text-sm text-gray-600">
-            <span className="font-semibold text-purple-600">💡 안내:</span> Firebase 설정을 완료하면 실제로 사용할 수 있습니다!
-          </p>
+        {/* 모드 안내 */}
+        <div className="mt-6 p-4 glass-effect rounded-2xl text-center border-2 border-purple-100">
+          {isLocalMode ? (
+            <div>
+              <p className="text-sm font-semibold text-purple-600 mb-2">
+                💡 로컬 스토리지 모드
+              </p>
+              <p className="text-xs text-gray-600 mb-2">
+                계정 정보는 브라우저에 저장됩니다. 실제 사용자처럼 회원가입/로그인이 가능합니다!
+              </p>
+              <p className="text-xs text-amber-600">
+                📖 Firebase를 설정하면 클라우드 동기화를 사용할 수 있습니다 (FIREBASE_SETUP.md 참고)
+              </p>
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm font-semibold text-green-600 mb-1">
+                ✅ Firebase 모드
+              </p>
+              <p className="text-xs text-gray-600">
+                클라우드 동기화가 활성화되었습니다
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

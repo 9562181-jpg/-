@@ -56,8 +56,8 @@ function MainApp() {
     }
   };
 
-  // Firebase 모드에서만 로그인 페이지 표시
-  if (!currentUser && !isLocalMode) {
+  // 로그인되지 않은 경우 로그인 페이지 표시
+  if (!currentUser) {
     return <AuthPage />;
   }
 
@@ -82,14 +82,12 @@ function MainApp() {
               <p className="text-xs text-gray-500">{currentUser?.email || ''}</p>
             </div>
           </div>
-          {!isLocalMode && (
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-xl hover:from-pink-600 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold text-sm"
-            >
-              로그아웃
-            </button>
-          )}
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-xl hover:from-pink-600 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold text-sm"
+          >
+            로그아웃
+          </button>
         </div>
       </div>
 

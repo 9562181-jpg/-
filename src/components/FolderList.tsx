@@ -66,17 +66,19 @@ const FolderList: React.FC = () => {
 
       {/* 로컬 모드 안내 */}
       {isLocalMode && (
-        <div className="mb-6 p-4 glass-effect rounded-2xl border-2 border-amber-200 shadow-pastel animate-fade-in">
+        <div className="mb-6 p-4 glass-effect rounded-2xl border-2 border-purple-200 shadow-pastel animate-fade-in">
           <div className="flex items-start gap-3">
-            <span className="text-2xl">💡</span>
+            <span className="text-2xl">💾</span>
             <div className="flex-1">
-              <h3 className="font-bold text-amber-800 mb-1">로컬 스토리지 모드로 실행 중</h3>
-              <p className="text-sm text-amber-700 mb-2">
-                현재 브라우저의 로컬 스토리지를 사용하여 메모를 저장하고 있습니다.
-                Firebase를 설정하면 클라우드 동기화를 사용할 수 있습니다.
+              <h3 className="font-bold text-purple-800 mb-1">로컬 스토리지 모드</h3>
+              <p className="text-sm text-purple-700 mb-2">
+                현재 브라우저에 데이터를 저장하고 있습니다. 여러 계정을 만들어 사용할 수 있습니다!
               </p>
-              <p className="text-xs text-amber-600">
-                📖 설정 방법: <code className="px-2 py-0.5 bg-amber-100 rounded">FIREBASE_SETUP.md</code> 파일을 참고하세요
+              <p className="text-xs text-purple-600">
+                💡 <strong>로그아웃</strong> 후 다른 계정으로 로그인하거나 새 계정을 만들 수 있습니다
+              </p>
+              <p className="text-xs text-amber-600 mt-1">
+                📖 클라우드 동기화: <code className="px-2 py-0.5 bg-amber-100 rounded">FIREBASE_SETUP.md</code> 참고
               </p>
             </div>
           </div>
