@@ -5,19 +5,14 @@ const { authenticateToken } = require('../middleware/auth');
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// 모든 라우트에 인증 미들웨어 적용
 router.use(authenticateToken);
 
 // 사용자의 모든 메모 조회
 router.get('/', async (req, res) => {
   try {
     const notes = await prisma.note.findMany({
-      where: {
-        userId: req.user.userId
-      },
-      orderBy: {
-        modifiedAt: 'desc'
-      }
+      where: { userId: req.user.userId },
+      orderBy: { modifiedAt: 'desc' },
     });
 
     res.json({ notes });
@@ -36,12 +31,8 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: '폴더 ID가 필요합니다' });
     }
 
-    // 폴더 소유권 확인
     const folder = await prisma.folder.findFirst({
-      where: {
-        id: folderId,
-        userId: req.user.userId
-      }
+      where: { id: folderId, userId: req.user.userId },
     });
 
     if (!folder) {
@@ -52,8 +43,8 @@ router.post('/', async (req, res) => {
       data: {
         content: content || '',
         folderId,
-        userId: req.user.userId
-      }
+        userId: req.user.userId,
+      },
     });
 
     res.status(201).json({ note });
@@ -69,12 +60,8 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { content } = req.body;
 
-    // 메모 소유권 확인
     const existingNote = await prisma.note.findFirst({
-      where: {
-        id,
-        userId: req.user.userId
-      }
+      where: { id, userId: req.user.userId },
     });
 
     if (!existingNote) {
@@ -83,7 +70,7 @@ router.put('/:id', async (req, res) => {
 
     const note = await prisma.note.update({
       where: { id },
-      data: { content }
+      data: { content },
     });
 
     res.json({ note });
@@ -98,21 +85,15 @@ router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    // 메모 소유권 확인
     const existingNote = await prisma.note.findFirst({
-      where: {
-        id,
-        userId: req.user.userId
-      }
+      where: { id, userId: req.user.userId },
     });
 
     if (!existingNote) {
       return res.status(404).json({ error: '메모를 찾을 수 없습니다' });
     }
 
-    await prisma.note.delete({
-      where: { id }
-    });
+    await prisma.note.delete({ where: { id } });
 
     res.json({ message: '메모가 삭제되었습니다' });
   } catch (error) {
@@ -121,30 +102,22 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// 메모를 다른 폴더로 이동
+// 메모 이동
 router.patch('/:id/move', async (req, res) => {
   try {
     const { id } = req.params;
     const { folderId } = req.body;
 
-    // 메모 소유권 확인
     const existingNote = await prisma.note.findFirst({
-      where: {
-        id,
-        userId: req.user.userId
-      }
+      where: { id, userId: req.user.userId },
     });
 
     if (!existingNote) {
       return res.status(404).json({ error: '메모를 찾을 수 없습니다' });
     }
 
-    // 폴더 소유권 확인
     const folder = await prisma.folder.findFirst({
-      where: {
-        id: folderId,
-        userId: req.user.userId
-      }
+      where: { id: folderId, userId: req.user.userId },
     });
 
     if (!folder) {
@@ -153,7 +126,7 @@ router.patch('/:id/move', async (req, res) => {
 
     const note = await prisma.note.update({
       where: { id },
-      data: { folderId }
+      data: { folderId },
     });
 
     res.json({ note });
@@ -164,4 +137,3 @@ router.patch('/:id/move', async (req, res) => {
 });
 
 module.exports = router;
-

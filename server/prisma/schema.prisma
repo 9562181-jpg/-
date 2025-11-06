@@ -1,25 +1,23 @@
-// Prisma Schema for Memo App with Supabase (PostgreSQL)
+// Prisma Schema for Memo App with Supabase PostgreSQL
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // 사용자 모델
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
-  password     String   // bcrypt로 해시된 비밀번호
+  password     String
   displayName  String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  // 관계
   notes        Note[]
   folders      Folder[]
 
@@ -36,7 +34,6 @@ model Folder {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  // 관계
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   notes      Note[]
 
@@ -53,7 +50,6 @@ model Note {
   createdAt  DateTime @default(now())
   modifiedAt DateTime @updatedAt
 
-  // 관계
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   folder     Folder   @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
@@ -61,4 +57,3 @@ model Note {
   @@index([userId])
   @@index([folderId])
 }
-

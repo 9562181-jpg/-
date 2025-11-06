@@ -91,16 +91,16 @@ function MainApp() {
 
       {/* 메인 컨텐츠 - 상단 헤더 높이만큼 패딩 추가 */}
       <div className="pt-20">
-        <Routes>
-          <Route path="/" element={<FolderList />} />
-          <Route path="/folder/:folderId" element={<NoteList />} />
-          <Route path="/note/:noteId" element={<NoteEditor />} />
-          <Route path="/search" element={<SearchPage />} />
-        </Routes>
+          <Routes>
+            <Route path="/" element={<FolderList />} />
+            <Route path="/folder/:folderId" element={<NoteList />} />
+            <Route path="/note/:noteId" element={<NoteEditor />} />
+            <Route path="/search" element={<SearchPage />} />
+          </Routes>
       </div>
       
-      <BottomNav />
-    </div>
+          <BottomNav />
+        </div>
   );
 }
 
@@ -110,8 +110,8 @@ function App() {
       <AppProvider>
         <Router>
           <MainApp />
-        </Router>
-      </AppProvider>
+      </Router>
+    </AppProvider>
     </AuthProvider>
   );
 }

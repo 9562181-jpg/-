@@ -12,17 +12,17 @@ router.post('/signup', async (req, res) => {
   try {
     const { email, password, displayName } = req.body;
 
-    // 유효성 검사
+    console.log('📝 회원가입 요청:', { email, displayName });
+
     if (!email || !password || !displayName) {
       return res.status(400).json({ error: '모든 필드를 입력해주세요' });
     }
 
     // 이메일 중복 확인
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
-    });
+    const existingUser = await prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
+      console.log('❌ 이메일 중복:', email);
       return res.status(400).json({ error: '이미 존재하는 이메일입니다' });
     }
 
@@ -34,9 +34,11 @@ router.post('/signup', async (req, res) => {
       data: {
         email,
         password: hashedPassword,
-        displayName
-      }
+        displayName,
+      },
     });
+
+    console.log('✅ 사용자 생성 완료:', user.id);
 
     // 기본 폴더 생성
     await prisma.folder.createMany({
@@ -45,34 +47,34 @@ router.post('/signup', async (req, res) => {
           id: `all-notes-${user.id}`,
           name: '모든 메모',
           isSpecial: true,
-          userId: user.id
+          userId: user.id,
         },
         {
           id: `recently-deleted-${user.id}`,
           name: '최근 삭제된 항목',
           isSpecial: true,
-          userId: user.id
-        }
-      ]
+          userId: user.id,
+        },
+      ],
     });
 
+    console.log('✅ 기본 폴더 생성 완료');
+
     // JWT 토큰 생성
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: '7d',
+    });
 
     res.status(201).json({
       user: {
         id: user.id,
         email: user.email,
-        displayName: user.displayName
+        displayName: user.displayName,
       },
-      token
+      token,
     });
   } catch (error) {
-    console.error('회원가입 오류:', error);
+    console.error('❌ 회원가입 오류:', error);
     res.status(500).json({ error: '서버 오류가 발생했습니다' });
   }
 });
@@ -82,15 +84,12 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 유효성 검사
     if (!email || !password) {
       return res.status(400).json({ error: '이메일과 비밀번호를 입력해주세요' });
     }
 
     // 사용자 찾기
-    const user = await prisma.user.findUnique({
-      where: { email }
-    });
+    const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
       return res.status(401).json({ error: '이메일 또는 비밀번호가 올바르지 않습니다' });
@@ -104,19 +103,17 @@ router.post('/login', async (req, res) => {
     }
 
     // JWT 토큰 생성
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: '7d',
+    });
 
     res.json({
       user: {
         id: user.id,
         email: user.email,
-        displayName: user.displayName
+        displayName: user.displayName,
       },
-      token
+      token,
     });
   } catch (error) {
     console.error('로그인 오류:', error);
@@ -128,7 +125,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
-    
+
     if (!token) {
       return res.status(401).json({ error: '인증 토큰이 필요합니다' });
     }
@@ -139,8 +136,8 @@ router.get('/me', async (req, res) => {
       select: {
         id: true,
         email: true,
-        displayName: true
-      }
+        displayName: true,
+      },
     });
 
     if (!user) {
@@ -149,10 +146,8 @@ router.get('/me', async (req, res) => {
 
     res.json({ user });
   } catch (error) {
-    console.error('사용자 조회 오류:', error);
     res.status(401).json({ error: '유효하지 않은 토큰입니다' });
   }
 });
 
 module.exports = router;
-
