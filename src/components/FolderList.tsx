@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { Folder, SPECIAL_FOLDER_IDS } from '../types';
 import { extractTitle, formatDate } from '../utils/storage';
 import Carousel from './Carousel';
@@ -8,6 +9,7 @@ import Carousel from './Carousel';
 const FolderList: React.FC = () => {
   const navigate = useNavigate();
   const { folders, notes, createFolder, deleteFolder } = useAppContext();
+  const { isLocalMode } = useAuth();
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
 
@@ -61,6 +63,25 @@ const FolderList: React.FC = () => {
           새 폴더
         </button>
       </div>
+
+      {/* 로컬 모드 안내 */}
+      {isLocalMode && (
+        <div className="mb-6 p-4 glass-effect rounded-2xl border-2 border-amber-200 shadow-pastel animate-fade-in">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">💡</span>
+            <div className="flex-1">
+              <h3 className="font-bold text-amber-800 mb-1">로컬 스토리지 모드로 실행 중</h3>
+              <p className="text-sm text-amber-700 mb-2">
+                현재 브라우저의 로컬 스토리지를 사용하여 메모를 저장하고 있습니다.
+                Firebase를 설정하면 클라우드 동기화를 사용할 수 있습니다.
+              </p>
+              <p className="text-xs text-amber-600">
+                📖 설정 방법: <code className="px-2 py-0.5 bg-amber-100 rounded">FIREBASE_SETUP.md</code> 파일을 참고하세요
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 최근 메모 캐러셀 */}
       <div className="mb-8">

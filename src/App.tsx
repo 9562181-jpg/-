@@ -44,7 +44,7 @@ function BottomNav() {
 }
 
 function MainApp() {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, isLocalMode } = useAuth();
 
   const handleLogout = async () => {
     if (window.confirm('로그아웃 하시겠습니까?')) {
@@ -56,7 +56,8 @@ function MainApp() {
     }
   };
 
-  if (!currentUser) {
+  // Firebase 모드에서만 로그인 페이지 표시
+  if (!currentUser && !isLocalMode) {
     return <AuthPage />;
   }
 
@@ -67,21 +68,28 @@ function MainApp() {
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-              {currentUser.displayName?.charAt(0) || '😊'}
+              {currentUser?.displayName?.charAt(0) || '😊'}
             </div>
             <div>
-              <p className="text-sm font-bold text-gray-800">
-                {currentUser.displayName || '사용자'}
+              <p className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                {currentUser?.displayName || '사용자'}
+                {isLocalMode && (
+                  <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-100 to-amber-100 text-amber-700 text-xs rounded-full font-medium">
+                    로컬 모드
+                  </span>
+                )}
               </p>
-              <p className="text-xs text-gray-500">{currentUser.email}</p>
+              <p className="text-xs text-gray-500">{currentUser?.email || ''}</p>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-xl hover:from-pink-600 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold text-sm"
-          >
-            로그아웃
-          </button>
+          {!isLocalMode && (
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-xl hover:from-pink-600 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold text-sm"
+            >
+              로그아웃
+            </button>
+          )}
         </div>
       </div>
 
