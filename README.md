@@ -59,9 +59,44 @@ db.jdiqtblpbzukxcdqfmdd.supabase.co → Name resolution failed
 
 ---
 
-## 🚀 설치 및 실행 (Supabase 연결 후)
+## 🚀 Prisma + Supabase 마이그레이션 및 실행
 
-### 1. 의존성 설치
+### Step 1: Supabase 프로젝트 Resume
+
+⚠️ **필수!** Supabase 무료 플랜은 7일 비활성 시 자동 일시중지됩니다.
+
+1. **https://app.supabase.com** 접속 후 로그인
+2. 프로젝트 상태 확인:
+   - 🔴 **Paused** → **"Resume Project"** 클릭
+   - 🟢 **Active** → 다음 단계 진행
+3. Resume 후 **1-2분 대기**
+
+### Step 2: Supabase 마이그레이션 실행
+
+**Supabase Dashboard → SQL Editor → New Query**
+
+`SUPABASE_마이그레이션.sql` 파일 전체 내용을 복사하여 실행:
+
+```sql
+-- users, folders, notes 테이블 생성
+-- 인덱스, 트리거, 함수 자동 설정
+-- (전체 SQL은 SUPABASE_마이그레이션.sql 참고)
+```
+
+**실행 결과:**
+```
+✅ 마이그레이션 완료!
+users_table: 1
+folders_table: 1
+notes_table: 1
+```
+
+**Table Editor에서 확인:**
+- ✅ `users` (사용자)
+- ✅ `folders` (폴더)
+- ✅ `notes` (메모)
+
+### Step 3: 의존성 설치
 
 ```bash
 # 프론트엔드
@@ -72,29 +107,25 @@ cd server
 npm install
 ```
 
-### 2. 환경 변수 설정
+### Step 4: 환경 변수 확인
 
-`server/.env` 파일에 Supabase Connection String 입력:
+`server/.env` 파일 (이미 설정됨):
 
 ```env
-DATABASE_URL="postgresql://postgres:[비밀번호]@[호스트]:6543/postgres?sslmode=require&pgbouncer=true"
-DIRECT_URL="postgresql://postgres:[비밀번호]@[호스트]:5432/postgres?sslmode=require"
+DATABASE_URL="postgresql://postgres:dlwndrl131001@db.jdiqtblpbzukxcdqfmdd.supabase.co:5432/postgres?sslmode=require"
+DIRECT_URL="postgresql://postgres:dlwndrl131001@db.jdiqtblpbzukxcdqfmdd.supabase.co:5432/postgres?sslmode=require"
 JWT_SECRET=memo-app-secret-key-2024
 PORT=5000
 ```
 
-### 3. Supabase 테이블 생성
-
-Supabase SQL Editor에서 `SUPABASE_마이그레이션.sql` 실행
-
-### 4. Prisma Client 생성
+### Step 5: Prisma Client 생성
 
 ```bash
 cd server
 npx prisma generate
 ```
 
-### 5. 앱 실행
+### Step 6: 앱 실행
 
 ```bash
 # 프로젝트 루트에서
@@ -112,10 +143,16 @@ npm run dev
 npm start
 ```
 
-### 6. 브라우저 접속
+### Step 7: 브라우저 접속
 
-- **프론트엔드**: http://localhost:3000
+- **프론트엔드**: http://localhost:3000 (자동으로 열림)
 - **백엔드 API**: http://localhost:5000
+
+### Step 8: 회원가입 및 데이터 확인
+
+1. 브라우저에서 회원가입
+2. **Supabase Dashboard → Table Editor → users**
+3. 새 사용자 데이터 실시간 확인! 🎉
 
 ---
 
