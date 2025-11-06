@@ -1,12 +1,13 @@
-# 메모 앱 ✨
+# 📝 메모 앱
 
 React, TypeScript, Tailwind CSS, SQLite, Prisma ORM으로 만든 현대적이고 아름다운 메모 애플리케이션입니다.
 
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.2-38B2AC?logo=tailwind-css)
 ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-4.9.5-3178C6?logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.2-38B2AC?logo=tailwind-css)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite)
-![Prisma](https://img.shields.io/badge/Prisma-5.7.0-2D3748?logo=prisma)
+![Prisma](https://img.shields.io/badge/Prisma-5.22-2D3748?logo=prisma)
+![Express](https://img.shields.io/badge/Express-4.18-000000?logo=express)
 
 ## 🎨 주요 기능
 
