@@ -49,13 +49,16 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
     );
   }
 
+  const offsetPercent = -currentIndex * 100;
+  const transformValue = 'translateX(' + offsetPercent + '%)';
+
   return (
     <div className="relative group">
       <div className="relative h-64 overflow-hidden rounded-3xl shadow-pastel-hover bg-gradient-to-br from-pink-400 via-purple-400 to-indigo-400 p-1">
         <div className="h-full glass-effect rounded-2xl overflow-hidden">
           <div
             className="h-full flex transition-transform duration-500 ease-out"
-            style={{ transform: `translateX(-${currentIndex * 100}`%)` }}
+            style={{ transform: transformValue }}
           >
             {items.map((item) => (
               <div
