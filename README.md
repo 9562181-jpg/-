@@ -1,22 +1,21 @@
-# 📝 메모 앱 (React + Express + Supabase PostgreSQL)
+# 📝 메모 앱 (Next.js + Prisma + Supabase)
 
-밝은 테마의 메모 앱입니다. 사용자 인증과 CRUD 기능을 제공합니다.
+밝은 파스텔 테마의 메모 앱입니다. **Next.js Full-stack**으로 구축되었습니다.
 
 ## 🎯 기술 스택
 
-### 프론트엔드
-- **React** 18 + **TypeScript**
+### Frontend
+- **Next.js 15** (App Router)
+- **React 18** + **TypeScript**
 - **Tailwind CSS** (밝은 파스텔 테마)
-- **React Router** (라우팅)
-- **Axios** (API 통신)
 
-### 백엔드
-- **Express.js** (Node.js 서버)
-- **Prisma ORM** (데이터베이스 툴킷)
+### Backend
+- **Next.js API Routes**
+- **Prisma ORM**
 - **JWT** (인증)
 - **bcrypt** (비밀번호 해싱)
 
-### 데이터베이스
+### Database
 - **Supabase PostgreSQL** (클라우드 데이터베이스)
 
 ## 📋 기능
@@ -28,40 +27,26 @@
 - ✅ 휴지통 (삭제된 메모 복원)
 - ✅ 최근 메모 캐러셀
 
-## 🚨 현재 상태
+## 🚀 빠른 시작
 
-### ✅ 완료된 설정
-- [x] SSL 연결 설정 (`sslmode=require`)
-- [x] Port 6543 (PgBouncer - Supabase 권장)
-- [x] DIRECT_URL (Prisma 마이그레이션용)
-- [x] Prisma Schema (PostgreSQL)
-- [x] 호스트 주소 확인: `db.jdiqtblpbzukxcdqfmdd.supabase.co`
-- [x] 내 IP 확인: `1.228.225.19`
+### 1. 환경 변수 설정
 
-### ❌ 현재 문제
-**DNS 조회 실패: Supabase 호스트 주소를 찾을 수 없습니다.**
+루트 디렉토리에 `.env.local` 파일 생성:
 
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://jdiqtblpbzukxcdqfmdd.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkaXF0YmxwYnp1a3hjZHFmbWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI0MTIzNTksImV4cCI6MjA3Nzk4ODM1OX0.vrlmQcpOdBpzfYFkgb77RIVBOBneAWEvFjM5a80eGgE
+
+# Prisma + Supabase PostgreSQL
+DATABASE_URL="postgresql://postgres:dlwndrl131001@db.jdiqtblpbzukxcdqfmdd.supabase.co:5432/postgres?sslmode=require"
+DIRECT_URL="postgresql://postgres:dlwndrl131001@db.jdiqtblpbzukxcdqfmdd.supabase.co:5432/postgres?sslmode=require"
+
+# JWT Secret
+JWT_SECRET=memo-app-secret-key-2024
 ```
-db.jdiqtblpbzukxcdqfmdd.supabase.co → Name resolution failed
-```
 
-### 🔍 원인
-1. **Supabase 프로젝트 일시중지/삭제**
-2. **호스트 주소 변경됨**
-3. **프로젝트 ID 오류**
-
-### ✅ 해결 방법
-**`SUPABASE_호스트주소_확인방법.md`** 파일을 참고하여:
-1. Supabase 대시보드 접속
-2. 프로젝트 상태 확인 (Active/Paused/Deleted)
-3. Settings → Database → Connection String 복사
-4. 정확한 호스트 주소 확인
-
----
-
-## 🚀 Prisma + Supabase 마이그레이션 및 실행
-
-### Step 1: Supabase 프로젝트 Resume
+### 2. Supabase 프로젝트 Resume
 
 ⚠️ **필수!** Supabase 무료 플랜은 7일 비활성 시 자동 일시중지됩니다.
 
@@ -71,17 +56,11 @@ db.jdiqtblpbzukxcdqfmdd.supabase.co → Name resolution failed
    - 🟢 **Active** → 다음 단계 진행
 3. Resume 후 **1-2분 대기**
 
-### Step 2: Supabase 마이그레이션 실행
+### 3. 테이블 생성 (최초 1회)
 
 **Supabase Dashboard → SQL Editor → New Query**
 
-`SUPABASE_마이그레이션.sql` 파일 전체 내용을 복사하여 실행:
-
-```sql
--- users, folders, notes 테이블 생성
--- 인덱스, 트리거, 함수 자동 설정
--- (전체 SQL은 SUPABASE_마이그레이션.sql 참고)
-```
+`SUPABASE_마이그레이션.sql` 파일 내용을 복사하여 실행:
 
 **실행 결과:**
 ```
@@ -91,68 +70,30 @@ folders_table: 1
 notes_table: 1
 ```
 
-**Table Editor에서 확인:**
-- ✅ `users` (사용자)
-- ✅ `folders` (폴더)
-- ✅ `notes` (메모)
-
-### Step 3: 의존성 설치
+### 4. 의존성 설치
 
 ```bash
-# 프론트엔드
-npm install
-
-# 백엔드
-cd server
 npm install
 ```
 
-### Step 4: 환경 변수 확인
-
-`server/.env` 파일 (이미 설정됨):
-
-```env
-DATABASE_URL="postgresql://postgres:dlwndrl131001@db.jdiqtblpbzukxcdqfmdd.supabase.co:5432/postgres?sslmode=require"
-DIRECT_URL="postgresql://postgres:dlwndrl131001@db.jdiqtblpbzukxcdqfmdd.supabase.co:5432/postgres?sslmode=require"
-JWT_SECRET=memo-app-secret-key-2024
-PORT=5000
-```
-
-### Step 5: Prisma Client 생성
+### 5. Next.js 개발 서버 실행
 
 ```bash
-cd server
-npx prisma generate
-```
-
-### Step 6: 앱 실행
-
-```bash
-# 프로젝트 루트에서
-npm run start:all
-```
-
-또는 개별 실행:
-
-```bash
-# 백엔드
-cd server
 npm run dev
-
-# 프론트엔드 (새 터미널)
-npm start
 ```
 
-### Step 7: 브라우저 접속
+**예상 출력:**
+```
+   ▲ Next.js 15.1.0
+   - Local:        http://localhost:3000
 
-- **프론트엔드**: http://localhost:3000 (자동으로 열림)
-- **백엔드 API**: http://localhost:5000
+ ✓ Starting...
+ ✓ Ready in 2.3s
+```
 
-### Step 8: 회원가입 및 데이터 확인
+### 6. 브라우저 접속
 
-1. 브라우저에서 회원가입
-2. **Supabase Dashboard → Table Editor → users**
-3. 새 사용자 데이터 실시간 확인! 🎉
+**http://localhost:3000** 접속!
 
 ---
 
@@ -160,54 +101,193 @@ npm start
 
 ```
 memo/
-├── src/                          # 프론트엔드
-│   ├── components/               # React 컴포넌트
-│   │   ├── AuthPage.tsx         # 로그인/회원가입
-│   │   ├── FolderList.tsx       # 폴더 목록
-│   │   ├── NoteList.tsx         # 메모 목록
-│   │   ├── NoteEditor.tsx       # 메모 에디터
-│   │   └── Carousel.tsx         # 최근 메모 캐러셀
-│   ├── context/                  # 상태 관리
-│   │   ├── AuthContext.tsx      # 인증 컨텍스트
-│   │   └── AppContext.tsx       # 앱 전역 상태
-│   ├── api/                      # API 클라이언트
-│   │   └── client.ts            # Axios 설정
-│   └── App.tsx                   # 메인 앱
+├── app/                     # Next.js App Router
+│   ├── api/                 # API Routes
+│   │   ├── auth/           # 인증 API
+│   │   │   ├── signup/
+│   │   │   ├── login/
+│   │   │   └── me/
+│   │   ├── notes/          # 메모 API
+│   │   └── folders/        # 폴더 API
+│   ├── layout.tsx          # 루트 레이아웃
+│   ├── page.tsx            # 메인 페이지
+│   ├── providers.tsx       # Context Providers
+│   └── globals.css         # 글로벌 스타일
 │
-├── server/                       # 백엔드
-│   ├── prisma/                   
-│   │   └── schema.prisma        # Prisma 스키마
-│   ├── src/
-│   │   ├── index.js             # Express 서버
-│   │   ├── middleware/
-│   │   │   └── auth.js          # JWT 인증 미들웨어
-│   │   └── routes/
-│   │       ├── auth.js          # 인증 라우트
-│   │       ├── notes.js         # 메모 라우트
-│   │       └── folders.js       # 폴더 라우트
-│   └── .env                      # 환경 변수
+├── components/             # React 컴포넌트
+│   ├── AuthPage.tsx        # 로그인/회원가입
+│   ├── MemoApp.tsx         # 메인 앱
+│   ├── FolderList.tsx      # 폴더 목록
+│   ├── NoteList.tsx        # 메모 목록
+│   ├── NoteEditor.tsx      # 메모 에디터
+│   ├── SearchPage.tsx      # 검색
+│   └── Carousel.tsx        # 캐러셀
 │
-├── SUPABASE_마이그레이션.sql      # DB 테이블 생성 SQL
-├── SUPABASE_진단_가이드.md        # 연결 문제 해결 가이드
-├── SUPABASE_호스트주소_확인방법.md # 호스트 주소 확인 방법
-└── README.md                      # 이 파일
+├── lib/                    # 유틸리티
+│   ├── prisma.ts          # Prisma 클라이언트
+│   ├── auth.ts            # JWT 인증
+│   └── api.ts             # API 클라이언트
+│
+├── prisma/                # Prisma 설정
+│   └── schema.prisma      # DB 스키마
+│
+├── types/                 # TypeScript 타입
+│   └── index.ts
+│
+├── utils/supabase/        # Supabase 클라이언트
+│   ├── server.ts          # Server Components
+│   ├── client.ts          # Client Components
+│   └── middleware.ts      # Middleware
+│
+├── next.config.js         # Next.js 설정
+├── tailwind.config.ts     # Tailwind 설정
+├── tsconfig.json          # TypeScript 설정
+└── package.json           # 의존성
 ```
 
 ---
 
-## 🔧 문제 해결
+## 🔧 주요 스크립트
 
-### 1. "Can't reach database server" 오류
-→ **`SUPABASE_진단_가이드.md`** 참고
+```bash
+# 개발 서버 실행
+npm run dev
 
-### 2. "Name resolution failed" 오류
-→ **`SUPABASE_호스트주소_확인방법.md`** 참고
+# 프로덕션 빌드
+npm run build
 
-### 3. "Environment variable not found" 오류
-→ `server/.env` 파일이 있는지 확인
+# 프로덕션 서버 실행
+npm start
 
-### 4. "EADDRINUSE: port already in use" 오류
-→ `taskkill /F /IM node.exe` 실행 후 재시도
+# Lint 실행
+npm run lint
+
+# Prisma Client 생성
+npx prisma generate
+
+# Prisma Studio (DB GUI)
+npx prisma studio
+```
+
+---
+
+## 📦 API 엔드포인트
+
+### 인증 API
+- `POST /api/auth/signup` - 회원가입
+- `POST /api/auth/login` - 로그인
+- `GET /api/auth/me` - 현재 사용자 정보
+
+### 메모 API
+- `GET /api/notes` - 메모 목록 조회
+- `POST /api/notes` - 메모 생성
+- `PUT /api/notes/[id]` - 메모 수정
+- `DELETE /api/notes/[id]` - 메모 삭제
+- `PATCH /api/notes/[id]` - 메모 이동
+
+### 폴더 API
+- `GET /api/folders` - 폴더 목록 조회
+- `POST /api/folders` - 폴더 생성
+- `PUT /api/folders/[id]` - 폴더 수정
+- `DELETE /api/folders/[id]` - 폴더 삭제
+
+---
+
+## 🔍 문제 해결
+
+### 문제 1: "Can't reach database server"
+
+**원인**: Supabase 프로젝트가 Paused 상태
+
+**해결**:
+1. https://app.supabase.com 접속
+2. "Resume Project" 클릭
+3. 1-2분 대기
+4. 서버 재시작: `npm run dev`
+
+### 문제 2: "Module not found"
+
+**원인**: 의존성 미설치
+
+**해결**:
+```bash
+rm -rf node_modules package-lock.json
+npm install
+npm run dev
+```
+
+### 문제 3: "Prisma Client did not initialize yet"
+
+**원인**: Prisma Client 미생성
+
+**해결**:
+```bash
+npx prisma generate
+npm run dev
+```
+
+### 문제 4: "Environment variable not found"
+
+**원인**: `.env.local` 파일 없음
+
+**해결**:
+1. 루트 디렉토리에 `.env.local` 파일 생성
+2. 환경 변수 추가 (위 '환경 변수 설정' 참고)
+3. 서버 재시작
+
+---
+
+## 🚀 프로덕션 배포
+
+### Vercel 배포 (권장)
+
+1. **GitHub에 푸시**
+```bash
+git add .
+git commit -m "Next.js 메모 앱 배포 준비"
+git push
+```
+
+2. **Vercel 연결**
+   - https://vercel.com 접속
+   - "Import Project"
+   - GitHub 저장소 선택
+
+3. **환경 변수 설정**
+   - Vercel Dashboard → Settings → Environment Variables
+   - `.env.local` 내용 추가
+
+4. **자동 배포!**
+   - Push할 때마다 자동 배포
+   - Production URL 제공
+
+---
+
+## 📖 가이드 문서
+
+- **NEXTJS_전환_가이드.md**: Next.js 전환 완벽 가이드
+- **SUPABASE_Prisma_마이그레이션_가이드.md**: Prisma + Supabase 설정
+- **ENV_설정_가이드.md**: 환경 변수 상세 설명
+- **SUPABASE_마이그레이션.sql**: DB 테이블 생성 SQL
+
+---
+
+## 🎊 특징
+
+### ✅ Express에서 Next.js로 전환
+- **이전**: React (Frontend) + Express (Backend)
+- **현재**: Next.js (Full-stack)
+- **장점**: 하나의 서버, 간단한 배포, 타입 안전성
+
+### ✅ Prisma ORM
+- 타입 안전한 데이터베이스 쿼리
+- 자동 마이그레이션
+- Prisma Studio (DB GUI)
+
+### ✅ 밝은 파스텔 테마
+- Tailwind CSS 커스텀 디자인
+- 글래스모피즘 효과
+- 애니메이션
 
 ---
 
@@ -217,11 +297,11 @@ memo/
 
 ---
 
-## 📞 다음 단계
+## 🎯 다음 단계
 
-1. **Supabase 대시보드**에서 프로젝트 상태 확인
-2. **Connection String** 복사
-3. `server/.env` 업데이트
-4. 앱 실행
+1. ✅ **http://localhost:3000** 접속하여 테스트
+2. ✅ 회원가입 → 메모 작성 → Supabase에서 데이터 확인
+3. ✅ GitHub에 푸시
+4. ✅ Vercel에 배포 (선택사항)
 
-**Supabase 호스트 주소만 확인하면 즉시 실행 가능합니다!** 🚀
+**모든 기능이 동일하게 작동하며, 더 빠르고 간단해졌습니다!** 🚀
