@@ -1,36 +1,41 @@
 -- Supabase PostgreSQL 마이그레이션 스크립트
 -- Prisma 스키마를 Supabase에 수동으로 적용하기 위한 SQL
 
+-- 기존 테이블이 있으면 먼저 삭제 (순서 중요: 외래키 때문에 역순으로)
+DROP TABLE IF EXISTS notes CASCADE;
+DROP TABLE IF EXISTS folders CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
 -- 1. Users 테이블 생성
-CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE users (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     "displayName" TEXT NOT NULL,
-    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- 2. Folders 테이블 생성
-CREATE TABLE IF NOT EXISTS folders (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE folders (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     name TEXT NOT NULL,
     "parentId" TEXT,
     "isSpecial" BOOLEAN DEFAULT false NOT NULL,
     "userId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "updatedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "updatedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT folders_userId_fkey FOREIGN KEY ("userId") REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- 3. Notes 테이블 생성
-CREATE TABLE IF NOT EXISTS notes (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE notes (
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     content TEXT DEFAULT '' NOT NULL,
     "folderId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "modifiedAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "modifiedAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT notes_userId_fkey FOREIGN KEY ("userId") REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT notes_folderId_fkey FOREIGN KEY ("folderId") REFERENCES folders(id) ON DELETE CASCADE
 );
