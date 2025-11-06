@@ -49,13 +49,13 @@ const FolderList: React.FC = () => {
     <div className="container mx-auto px-4 py-6 max-w-7xl">
       {/* 헤더 */}
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-4xl font-bold text-gray-800 flex items-center gap-3">
-          <span className="text-blue-600">📝</span>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3 animate-fade-in">
+          <span className="animate-float">📝</span>
           메모 앱
         </h1>
         <button
           onClick={() => setShowNewFolderInput(true)}
-          className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-2xl hover:from-pink-600 hover:to-pink-700 transition-all shadow-pastel hover:shadow-pastel-hover transform hover:-translate-y-1 hover:scale-105"
         >
           <span className="text-xl">📁</span>
           새 폴더
@@ -65,12 +65,12 @@ const FolderList: React.FC = () => {
       {/* 최근 메모 캐러셀 */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
             <span>⏰</span>
             최근 메모
           </h2>
           {recentNotes.length > 0 && (
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-pink-500 font-medium animate-pulse">
               자동으로 넘어갑니다
             </span>
           )}
@@ -80,7 +80,7 @@ const FolderList: React.FC = () => {
 
       {/* 폴더 섹션 */}
       <div className="mb-4">
-        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
           <span>📂</span>
           폴더
         </h2>
@@ -92,14 +92,14 @@ const FolderList: React.FC = () => {
           <div
             key={folder.id}
             onClick={() => handleFolderClick(folder.id)}
-            className="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2 border border-gray-100 overflow-hidden"
+            className="group glass-effect rounded-2xl shadow-pastel hover:shadow-pastel-hover transition-all duration-300 cursor-pointer transform hover:-translate-y-2 border border-pink-100 overflow-hidden"
           >
             <div className="p-6 flex items-center gap-4">
               <div className="text-5xl flex-shrink-0 transition-transform group-hover:scale-110">
                 {folder.isSpecial ? '⭐' : '📁'}
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-semibold text-gray-800 truncate group-hover:text-blue-600 transition-colors">
+                <h3 className="text-lg font-semibold text-gray-800 truncate group-hover:text-pink-600 transition-colors">
                   {folder.name}
                 </h3>
               </div>
@@ -118,16 +118,16 @@ const FolderList: React.FC = () => {
 
       {/* 모달 */}
       {showNewFolderInput && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="glass-effect rounded-3xl shadow-pastel-hover w-full max-w-md transform transition-all animate-slide-up">
+            <div className="p-6 border-b border-pink-100">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
                 <span>📁</span>
                 새 폴더 만들기
               </h3>
             </div>
             <div className="p-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 폴더 이름
               </label>
               <input
@@ -141,19 +141,19 @@ const FolderList: React.FC = () => {
                     handleCreateFolder();
                   }
                 }}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 border-2 border-pink-200 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-transparent outline-none transition-all bg-white"
               />
             </div>
-            <div className="p-6 border-t border-gray-200 flex gap-3 justify-end">
+            <div className="p-6 border-t border-pink-100 flex gap-3 justify-end">
               <button
                 onClick={() => setShowNewFolderInput(false)}
-                className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-medium transform hover:scale-105"
               >
                 취소
               </button>
               <button
                 onClick={handleCreateFolder}
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-md"
+                className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-xl hover:from-pink-600 hover:to-pink-700 transition-all font-medium shadow-pastel transform hover:scale-105"
               >
                 생성
               </button>

@@ -1,51 +1,92 @@
 import { Note, Folder, SPECIAL_FOLDER_IDS } from '../types';
+import {
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+} from 'firebase/firestore';
+import { db } from '../firebase/config';
 
-const STORAGE_KEYS = {
-  NOTES: 'memo-app-notes',
-  FOLDERS: 'memo-app-folders',
-} as const;
-
-// 로컬 스토리지에서 메모 가져오기
-export const loadNotes = (): Note[] => {
+// Firestore에서 사용자의 메모 가져오기
+export const loadNotes = async (userId: string): Promise<Note[]> => {
   try {
-    const data = localStorage.getItem(STORAGE_KEYS.NOTES);
-    return data ? JSON.parse(data) : [];
+    const notesRef = collection(db, 'users', userId, 'notes');
+    const snapshot = await getDocs(notesRef);
+    return snapshot.docs.map((doc) => doc.data() as Note);
   } catch (error) {
     console.error('메모 로드 실패:', error);
     return [];
   }
 };
 
-// 로컬 스토리지에 메모 저장
-export const saveNotes = (notes: Note[]): void => {
+// Firestore에 메모 저장
+export const saveNote = async (userId: string, note: Note): Promise<void> => {
   try {
-    localStorage.setItem(STORAGE_KEYS.NOTES, JSON.stringify(notes));
+    const noteRef = doc(db, 'users', userId, 'notes', note.id);
+    await setDoc(noteRef, note);
   } catch (error) {
     console.error('메모 저장 실패:', error);
+    throw error;
   }
 };
 
-// 로컬 스토리지에서 폴더 가져오기
-export const loadFolders = (): Folder[] => {
+// Firestore에서 메모 삭제
+export const deleteNoteFromDB = async (userId: string, noteId: string): Promise<void> => {
   try {
-    const data = localStorage.getItem(STORAGE_KEYS.FOLDERS);
-    if (data) {
-      return JSON.parse(data);
+    const noteRef = doc(db, 'users', userId, 'notes', noteId);
+    await deleteDoc(noteRef);
+  } catch (error) {
+    console.error('메모 삭제 실패:', error);
+    throw error;
+  }
+};
+
+// Firestore에서 사용자의 폴더 가져오기
+export const loadFolders = async (userId: string): Promise<Folder[]> => {
+  try {
+    const foldersRef = collection(db, 'users', userId, 'folders');
+    const snapshot = await getDocs(foldersRef);
+    const folders = snapshot.docs.map((doc) => doc.data() as Folder);
+    
+    // 폴더가 없으면 기본 폴더 생성
+    if (folders.length === 0) {
+      const defaultFolders = getDefaultFolders();
+      for (const folder of defaultFolders) {
+        await saveFolder(userId, folder);
+      }
+      return defaultFolders;
     }
-    // 초기 특수 폴더 생성
-    return getDefaultFolders();
+    
+    return folders;
   } catch (error) {
     console.error('폴더 로드 실패:', error);
     return getDefaultFolders();
   }
 };
 
-// 로컬 스토리지에 폴더 저장
-export const saveFolders = (folders: Folder[]): void => {
+// Firestore에 폴더 저장
+export const saveFolder = async (userId: string, folder: Folder): Promise<void> => {
   try {
-    localStorage.setItem(STORAGE_KEYS.FOLDERS, JSON.stringify(folders));
+    const folderRef = doc(db, 'users', userId, 'folders', folder.id);
+    await setDoc(folderRef, folder);
   } catch (error) {
     console.error('폴더 저장 실패:', error);
+    throw error;
+  }
+};
+
+// Firestore에서 폴더 삭제
+export const deleteFolderFromDB = async (userId: string, folderId: string): Promise<void> => {
+  try {
+    const folderRef = doc(db, 'users', userId, 'folders', folderId);
+    await deleteDoc(folderRef);
+  } catch (error) {
+    console.error('폴더 삭제 실패:', error);
+    throw error;
   }
 };
 

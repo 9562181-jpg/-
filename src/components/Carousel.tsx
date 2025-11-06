@@ -39,10 +39,10 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
 
   if (items.length === 0) {
     return (
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-12 text-center border-2 border-dashed border-blue-200">
-        <div className="text-6xl mb-4">📝</div>
-        <p className="text-gray-500 text-lg">최근 메모가 없습니다</p>
-        <p className="text-gray-400 text-sm mt-2">새로운 메모를 작성해보세요!</p>
+      <div className="bg-gradient-to-r from-pastel-pink to-pastel-purple rounded-3xl p-12 text-center border-2 border-dashed border-pink-300 shadow-pastel">
+        <div className="text-6xl mb-4 animate-float">📝</div>
+        <p className="text-gray-600 text-lg font-semibold">최근 메모가 없습니다</p>
+        <p className="text-gray-500 text-sm mt-2">새로운 메모를 작성해보세요!</p>
       </div>
     );
   }
@@ -50,8 +50,8 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
   return (
     <div className="relative group">
       {/* 캐러셀 컨테이너 */}
-      <div className="relative h-64 overflow-hidden rounded-2xl shadow-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-1">
-        <div className="h-full bg-white rounded-xl overflow-hidden">
+      <div className="relative h-64 overflow-hidden rounded-3xl shadow-pastel-hover bg-gradient-to-br from-pink-400 via-purple-400 to-indigo-400 p-1">
+        <div className="h-full glass-effect rounded-2xl overflow-hidden">
           {/* 슬라이드 */}
           <div
             className="h-full flex transition-transform duration-500 ease-out"
@@ -60,7 +60,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
             {items.map((item) => (
               <div
                 key={item.id}
-                className="min-w-full h-full p-8 cursor-pointer hover:bg-gray-50 transition-colors flex flex-col justify-between"
+                className="min-w-full h-full p-8 cursor-pointer hover:bg-pastel-pink hover:bg-opacity-30 transition-all flex flex-col justify-between"
                 onClick={item.onClick}
               >
                 <div>
@@ -68,7 +68,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
                     <h3 className="text-2xl font-bold text-gray-800 truncate flex-1">
                       {item.title}
                     </h3>
-                    <span className="ml-4 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium whitespace-nowrap">
+                    <span className="ml-4 px-3 py-1 bg-gradient-to-r from-pink-100 to-purple-100 text-pink-700 rounded-full text-sm font-semibold whitespace-nowrap shadow-sm">
                       {item.date}
                     </span>
                   </div>
@@ -76,7 +76,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
                     {item.preview}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 text-blue-600 font-medium mt-4">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent font-bold mt-4">
                   <span>메모 보기</span>
                   <span>→</span>
                 </div>
@@ -90,7 +90,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
       {items.length > 1 && (
         <button
           onClick={goToPrevious}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm"
+          className="absolute left-4 top-1/2 -translate-y-1/2 glass-effect hover:shadow-pastel text-pink-600 rounded-full p-3 shadow-pastel opacity-0 group-hover:opacity-100 transition-all duration-300 transform hover:scale-110"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -102,7 +102,7 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
       {items.length > 1 && (
         <button
           onClick={goToNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm"
+          className="absolute right-4 top-1/2 -translate-y-1/2 glass-effect hover:shadow-pastel text-pink-600 rounded-full p-3 shadow-pastel opacity-0 group-hover:opacity-100 transition-all duration-300 transform hover:scale-110"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -117,10 +117,10 @@ const Carousel: React.FC<CarouselProps> = ({ items, autoPlay = true, interval = 
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+              className={`rounded-full transition-all duration-300 ${
                 index === currentIndex
-                  ? 'bg-white w-8 shadow-lg'
-                  : 'bg-white/50 hover:bg-white/75'
+                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 w-8 h-2.5 shadow-lg'
+                  : 'bg-white/70 hover:bg-white w-2.5 h-2.5'
               }`}
             />
           ))}

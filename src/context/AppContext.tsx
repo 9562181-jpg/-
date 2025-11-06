@@ -2,16 +2,20 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Note, Folder, SortOption, SPECIAL_FOLDER_IDS } from '../types';
 import {
   loadNotes,
-  saveNotes,
+  saveNote,
+  deleteNoteFromDB,
   loadFolders,
-  saveFolders,
+  saveFolder,
+  deleteFolderFromDB,
   generateId,
 } from '../utils/storage';
+import { useAuth } from './AuthContext';
 
 interface AppContextType {
   notes: Note[];
   folders: Folder[];
   sortOption: SortOption;
+  loading: boolean;
   setSortOption: (option: SortOption) => void;
   createNote: (folderId: string) => Note;
   updateNote: (id: string, content: string) => void;
@@ -35,34 +39,44 @@ export const useAppContext = () => {
 };
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { currentUser } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
   const [sortOption, setSortOption] = useState<SortOption>('modifiedAt');
+  const [loading, setLoading] = useState(true);
 
-  // 초기 로드
+  // 사용자 로그인 시 데이터 로드
   useEffect(() => {
-    const loadedNotes = loadNotes();
-    const loadedFolders = loadFolders();
-    setNotes(loadedNotes);
-    setFolders(loadedFolders);
-  }, []);
+    const loadData = async () => {
+      if (!currentUser) {
+        setNotes([]);
+        setFolders([]);
+        setLoading(false);
+        return;
+      }
 
-  // 메모 변경 시 저장
-  useEffect(() => {
-    if (notes.length >= 0) {
-      saveNotes(notes);
-    }
-  }, [notes]);
+      setLoading(true);
+      try {
+        const [loadedNotes, loadedFolders] = await Promise.all([
+          loadNotes(currentUser.uid),
+          loadFolders(currentUser.uid),
+        ]);
+        setNotes(loadedNotes);
+        setFolders(loadedFolders);
+      } catch (error) {
+        console.error('데이터 로드 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // 폴더 변경 시 저장
-  useEffect(() => {
-    if (folders.length > 0) {
-      saveFolders(folders);
-    }
-  }, [folders]);
+    loadData();
+  }, [currentUser]);
 
   // 새 메모 생성
   const createNote = (folderId: string): Note => {
+    if (!currentUser) throw new Error('로그인이 필요합니다');
+    
     const newNote: Note = {
       id: generateId(),
       folderId,
@@ -70,70 +84,112 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       createdAt: Date.now(),
       modifiedAt: Date.now(),
     };
+    
     setNotes((prev) => [newNote, ...prev]);
+    saveNote(currentUser.uid, newNote).catch(console.error);
     return newNote;
   };
 
   // 메모 업데이트
   const updateNote = (id: string, content: string) => {
+    if (!currentUser) return;
+    
     setNotes((prev) =>
-      prev.map((note) =>
-        note.id === id
-          ? { ...note, content, modifiedAt: Date.now() }
-          : note
-      )
+      prev.map((note) => {
+        if (note.id === id) {
+          const updatedNote = { ...note, content, modifiedAt: Date.now() };
+          saveNote(currentUser.uid, updatedNote).catch(console.error);
+          return updatedNote;
+        }
+        return note;
+      })
     );
   };
 
   // 메모 삭제 (휴지통으로 이동)
   const deleteNote = (id: string) => {
+    if (!currentUser) return;
+    
     setNotes((prev) =>
-      prev.map((note) =>
-        note.id === id
-          ? { ...note, folderId: SPECIAL_FOLDER_IDS.RECENTLY_DELETED, modifiedAt: Date.now() }
-          : note
-      )
+      prev.map((note) => {
+        if (note.id === id) {
+          const updatedNote = {
+            ...note,
+            folderId: SPECIAL_FOLDER_IDS.RECENTLY_DELETED,
+            modifiedAt: Date.now(),
+          };
+          saveNote(currentUser.uid, updatedNote).catch(console.error);
+          return updatedNote;
+        }
+        return note;
+      })
     );
   };
 
   // 메모 영구 삭제
   const permanentlyDeleteNote = (id: string) => {
+    if (!currentUser) return;
+    
     setNotes((prev) => prev.filter((note) => note.id !== id));
+    deleteNoteFromDB(currentUser.uid, id).catch(console.error);
   };
 
   // 메모 복원
   const restoreNote = (id: string, targetFolderId: string) => {
+    if (!currentUser) return;
+    
     setNotes((prev) =>
-      prev.map((note) =>
-        note.id === id
-          ? { ...note, folderId: targetFolderId, modifiedAt: Date.now() }
-          : note
-      )
+      prev.map((note) => {
+        if (note.id === id) {
+          const updatedNote = {
+            ...note,
+            folderId: targetFolderId,
+            modifiedAt: Date.now(),
+          };
+          saveNote(currentUser.uid, updatedNote).catch(console.error);
+          return updatedNote;
+        }
+        return note;
+      })
     );
   };
 
   // 폴더 생성
   const createFolder = (name: string, parentId: string | null) => {
+    if (!currentUser) return;
+    
     const newFolder: Folder = {
       id: generateId(),
       name,
       parentId,
     };
+    
     setFolders((prev) => [...prev, newFolder]);
+    saveFolder(currentUser.uid, newFolder).catch(console.error);
   };
 
   // 폴더 삭제
   const deleteFolder = (id: string) => {
+    if (!currentUser) return;
+    
     // 폴더 내 모든 메모를 휴지통으로 이동
     setNotes((prev) =>
-      prev.map((note) =>
-        note.folderId === id
-          ? { ...note, folderId: SPECIAL_FOLDER_IDS.RECENTLY_DELETED }
-          : note
-      )
+      prev.map((note) => {
+        if (note.folderId === id) {
+          const updatedNote = {
+            ...note,
+            folderId: SPECIAL_FOLDER_IDS.RECENTLY_DELETED,
+          };
+          saveNote(currentUser.uid, updatedNote).catch(console.error);
+          return updatedNote;
+        }
+        return note;
+      })
     );
+    
     // 폴더 삭제
     setFolders((prev) => prev.filter((folder) => folder.id !== id));
+    deleteFolderFromDB(currentUser.uid, id).catch(console.error);
   };
 
   // 특정 폴더의 메모 가져오기
@@ -190,6 +246,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     notes,
     folders,
     sortOption,
+    loading,
     setSortOption,
     createNote,
     updateNote,
@@ -202,6 +259,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     searchNotes,
   };
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>
+      {loading ? (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-6xl mb-4 animate-bounce">📝</div>
+            <p className="text-xl text-gray-600">로딩 중...</p>
+          </div>
+        </div>
+      ) : (
+        children
+      )}
+    </AppContext.Provider>
+  );
 };
 

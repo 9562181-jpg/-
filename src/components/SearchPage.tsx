@@ -36,12 +36,12 @@ const SearchPage: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 glass-effect hover:shadow-pastel rounded-xl transition-all transform hover:scale-105"
           >
             <span>←</span>
             뒤로
           </button>
-          <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
             <span>🔍</span>
             메모 검색
           </h2>
@@ -50,7 +50,7 @@ const SearchPage: React.FC = () => {
 
         {/* 검색 바 */}
         <div className="relative">
-          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl">
+          <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-pink-400 text-xl">
             🔍
           </div>
           <input
@@ -59,12 +59,12 @@ const SearchPage: React.FC = () => {
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
             autoFocus
-            className="w-full pl-12 pr-12 py-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all shadow-sm"
+            className="w-full pl-12 pr-12 py-4 text-lg border-2 border-pink-200 rounded-2xl focus:ring-2 focus:ring-pink-400 focus:border-transparent outline-none transition-all shadow-pastel glass-effect"
           />
           {query && (
             <button
               onClick={() => handleSearch('')}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xl"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-pink-400 hover:text-pink-600 text-xl transition-colors"
             >
               ✕
             </button>
@@ -88,7 +88,7 @@ const SearchPage: React.FC = () => {
         ) : (
           <>
             <div className="mb-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-lg font-medium">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-2xl font-medium shadow-pastel">
                 <span>✓</span>
                 {results.length}개의 메모를 찾았습니다
               </div>
@@ -98,14 +98,14 @@ const SearchPage: React.FC = () => {
                 <div
                   key={note.id}
                   onClick={() => handleNoteClick(note.id)}
-                  className="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2 border border-gray-100 overflow-hidden"
+                  className="group glass-effect rounded-2xl shadow-pastel hover:shadow-pastel-hover transition-all duration-300 cursor-pointer transform hover:-translate-y-2 border border-pink-100 overflow-hidden"
                 >
                   <div className="p-5">
                     <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-lg font-semibold text-gray-800 truncate flex-1 group-hover:text-blue-600 transition-colors">
+                      <h3 className="text-lg font-semibold text-gray-800 truncate flex-1 group-hover:text-pink-600 transition-colors">
                         {extractTitle(note.content)}
                       </h3>
-                      <span className="ml-2 px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full whitespace-nowrap">
+                      <span className="ml-2 px-3 py-1 bg-gradient-to-r from-pink-100 to-purple-100 text-pink-700 text-xs rounded-full whitespace-nowrap font-medium">
                         {formatDate(note.modifiedAt)}
                       </span>
                     </div>

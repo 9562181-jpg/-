@@ -67,19 +67,19 @@ const NoteList: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 glass-effect hover:shadow-pastel rounded-xl transition-all transform hover:scale-105"
           >
             <span>←</span>
             뒤로
           </button>
-          <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
             <span>{isRecentlyDeleted ? '🗑️' : '📂'}</span>
             {folder?.name || '메모'}
           </h2>
           {!isRecentlyDeleted && (
             <button
               onClick={handleNewNote}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-xl hover:from-pink-600 hover:to-pink-700 transition-all shadow-pastel transform hover:scale-105"
             >
               <span>✏️</span>
               새 메모
@@ -91,13 +91,13 @@ const NoteList: React.FC = () => {
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value as SortOption)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+            className="px-4 py-2 border-2 border-pink-200 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-transparent outline-none glass-effect"
           >
             <option value="modifiedAt">⏰ 최근 수정순</option>
             <option value="createdAt">📅 생성 날짜순</option>
             <option value="title">🔤 제목순</option>
           </select>
-          <div className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-medium">
+          <div className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-xl font-semibold shadow-pastel">
             총 {notes.length}개의 메모
           </div>
         </div>
@@ -119,14 +119,14 @@ const NoteList: React.FC = () => {
             <div
               key={note.id}
               onClick={() => handleNoteClick(note.id)}
-              className="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2 border border-gray-100 overflow-hidden"
+              className="group glass-effect rounded-2xl shadow-pastel hover:shadow-pastel-hover transition-all duration-300 cursor-pointer transform hover:-translate-y-2 border border-pink-100 overflow-hidden"
             >
               <div className="p-5">
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-lg font-semibold text-gray-800 truncate flex-1 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-lg font-semibold text-gray-800 truncate flex-1 group-hover:text-pink-600 transition-colors">
                     {extractTitle(note.content)}
                   </h3>
-                  <span className="ml-2 px-3 py-1 bg-gray-100 text-gray-600 text-xs rounded-full whitespace-nowrap">
+                  <span className="ml-2 px-3 py-1 bg-gradient-to-r from-pink-100 to-purple-100 text-pink-700 text-xs rounded-full whitespace-nowrap font-medium">
                     {formatDate(note.modifiedAt)}
                   </span>
                 </div>
@@ -138,13 +138,13 @@ const NoteList: React.FC = () => {
                     <>
                       <button
                         onClick={(e) => handleRestoreNote(e, note.id)}
-                        className="flex-1 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium"
+                        className="flex-1 px-4 py-2 bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-xl hover:from-green-500 hover:to-emerald-600 transition-all text-sm font-medium shadow-lg transform hover:scale-105"
                       >
                         ↻ 복원
                       </button>
                       <button
                         onClick={(e) => handleDeleteNote(e, note.id)}
-                        className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
+                        className="flex-1 px-4 py-2 bg-gradient-to-r from-red-400 to-red-500 text-white rounded-xl hover:from-red-500 hover:to-red-600 transition-all text-sm font-medium shadow-lg transform hover:scale-105"
                       >
                         🗑️ 영구 삭제
                       </button>
@@ -152,7 +152,7 @@ const NoteList: React.FC = () => {
                   ) : (
                     <button
                       onClick={(e) => handleDeleteNote(e, note.id)}
-                      className="opacity-0 group-hover:opacity-100 px-3 py-1.5 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-all text-sm"
+                      className="opacity-0 group-hover:opacity-100 px-3 py-1.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-all text-sm transform hover:scale-105"
                     >
                       🗑️ 삭제
                     </button>

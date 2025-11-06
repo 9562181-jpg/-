@@ -223,14 +223,14 @@ const NoteEditor: React.FC = () => {
   if (!note) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* 상단 툴바 */}
-      <div className="sticky top-0 bg-white shadow-md z-10 border-b border-gray-200">
+      <div className="sticky top-16 glass-effect shadow-pastel z-10 border-b border-pink-100">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-xl hover:from-pink-600 hover:to-pink-700 transition-all shadow-pastel transform hover:scale-105"
             >
               <span>✓</span>
               완료
@@ -239,10 +239,10 @@ const NoteEditor: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => applyFormat('bold')}
-                className={`p-2.5 rounded-lg border transition-all ${
+                className={`p-2.5 rounded-xl border-2 transition-all transform hover:scale-105 ${
                   isBold
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white border-pink-500'
+                    : 'glass-effect text-gray-700 border-pink-200 hover:border-pink-300'
                 }`}
                 title="굵게"
               >
@@ -250,10 +250,10 @@ const NoteEditor: React.FC = () => {
               </button>
               <button
                 onClick={() => applyFormat('italic')}
-                className={`p-2.5 rounded-lg border transition-all ${
+                className={`p-2.5 rounded-xl border-2 transition-all transform hover:scale-105 ${
                   isItalic
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white border-pink-500'
+                    : 'glass-effect text-gray-700 border-pink-200 hover:border-pink-300'
                 }`}
                 title="기울임"
               >
@@ -261,19 +261,19 @@ const NoteEditor: React.FC = () => {
               </button>
               <button
                 onClick={() => applyFormat('underline')}
-                className="p-2.5 rounded-lg border bg-white text-gray-700 border-gray-300 hover:bg-gray-50 transition-all"
+                className="p-2.5 rounded-xl border-2 glass-effect text-gray-700 border-pink-200 hover:border-pink-300 transition-all transform hover:scale-105"
                 title="밑줄"
               >
                 <span className="underline">U</span>
               </button>
               <button
                 onClick={insertCheckbox}
-                className="p-2.5 rounded-lg border bg-white text-gray-700 border-gray-300 hover:bg-gray-50 transition-all"
+                className="p-2.5 rounded-xl border-2 glass-effect text-gray-700 border-pink-200 hover:border-pink-300 transition-all transform hover:scale-105"
                 title="체크리스트"
               >
                 ☑
               </button>
-              <label className="p-2.5 rounded-lg border bg-white text-gray-700 border-gray-300 hover:bg-gray-50 transition-all cursor-pointer">
+              <label className="p-2.5 rounded-xl border-2 glass-effect text-gray-700 border-pink-200 hover:border-pink-300 transition-all transform hover:scale-105 cursor-pointer">
                 📷
                 <input
                   type="file"
@@ -288,10 +288,10 @@ const NoteEditor: React.FC = () => {
       </div>
 
       {/* 에디터 */}
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
+      <div className="container mx-auto px-4 py-6 max-w-4xl pt-24">
         <div
           ref={editorRef}
-          className="min-h-[500px] bg-white rounded-xl shadow-lg p-8 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          className="min-h-[500px] glass-effect rounded-2xl shadow-pastel-hover p-8 outline-none focus:ring-2 focus:ring-pink-400 transition-all border border-pink-100"
           contentEditable
           onInput={handleContentChange}
           onKeyDown={handleKeyDown}
